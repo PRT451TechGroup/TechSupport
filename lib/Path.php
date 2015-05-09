@@ -16,14 +16,21 @@ class Path
 	}
 	public function peek()
 	{
-		return $this->pos <= count($this->spl) ? $this->spl[$this->pos] : null;
+		return $this->hasNext() ? $this->spl[$this->pos] : null;
 	}
 	public function rewind()
 	{
 		if ($this->pos !== 0)
 		{
 			$this->pos--;
+			return $this->spl[$this->pos];
 		}
+		else
+			return null;
+	}
+	public function reset()
+	{
+		$this->pos = 0;
 	}
 	
 	public function count()

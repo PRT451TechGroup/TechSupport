@@ -1,20 +1,30 @@
 <?php
 class ClientApplet
 {
-	public function __construct()
+	private $app;
+	public function __construct($app)
 	{
 		session_start();
+		$this->app = $app;
 	}
-	public function start($getVars, $postVars, $path)
+	public function start()
 	{
-		while(($p = $path->next()) != null)
+		/*$pages = array
+		(
+			"pgMain",
+			""
+		);
+
+		foreach($pages as $key => $value)
 		{
-			echo htmlspecialchars($p) . "<br />";
-		}
+			include sprintf("%s/%s.php", PAGEDIR, $value);
+		}*/
+
+		include sprintf("%s/%s.php", PAGEDIR, "default");
 	}
-	public static function callback($getVars, $postVars, $path)
+	public static function callback($app)
 	{
-		return (new ClientApplet())->start($getVars, $postVars, $path);
+		return (new ClientApplet($app))->start();
 	}
 }
 ?>
