@@ -24,7 +24,8 @@ class ClientApplet
 	}
 	public static function callback($app)
 	{
-		return (new ClientApplet($app))->start();
+		$a = new ClientApplet($app);
+		return $a->start();
 	}
 }
 ?>

@@ -13,7 +13,8 @@ class ScriptApplet
 	}
 	public static function callback($app)
 	{
-		return (new ScriptApplet($app))->start();
+		$a = new ScriptApplet($app);
+		return $a->start();
 	}
 }
 ?>

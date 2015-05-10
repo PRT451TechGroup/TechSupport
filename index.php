@@ -12,12 +12,12 @@ function startApplication()
 	$app->arguments($_POST)->path($path);
 	$app->doctree(array
 	(
-		"*" => array("ClientApplet", "callback"),
-		"user" => array("UserApplet", "callback"),
-		"repair" => array("RepairApplet", "callback"),
-		"request" => array("RequestApplet", "callback"),
-		"loan" => array("LoanApplet", "callback"),
-		"js" => array("ScriptApplet", "callback")
+		"*" => function($v) { ClientApplet::callback($v); },
+		"user" => function($v) { UserApplet::callback($v); },
+		"repair" => function($v) { RepairApplet::callback($v); },
+		"request" => function($v) { RequestApplet::callback($v); },
+		"loan" => function($v) { LoanApplet::callback($v); },
+		"js" => function($v) { ScriptApplet::callback($v); }
 	));
 	$app->start();
 }
