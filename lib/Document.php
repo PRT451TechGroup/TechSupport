@@ -38,7 +38,7 @@ class Document
 	}
 	public static function build()
 	{
-		self::page("default");
+		self::page("template");
 	}
 	public static function context($val = null)
 	{
@@ -61,6 +61,12 @@ class Document
 		{
 			return self::$vars[$key];
 		}
+	}
+	public static function redirect($v)
+	{
+		self::val("redirect", $v);
+		self::body(function() { self::page("redirect"); });
+		self::build();
 	}
 }
 ?>
