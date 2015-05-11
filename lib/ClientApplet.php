@@ -9,18 +9,25 @@ class ClientApplet
 	}
 	public function start()
 	{
-		/*$pages = array
-		(
-			"pgMain",
-			""
-		);
+		$path = $this->app->path();
 
-		foreach($pages as $key => $value)
+		if (!$path->hasNext())
 		{
-			include sprintf("%s/%s.php", PAGEDIR, $value);
-		}*/
-
-		include sprintf("%s/%s.php", PAGEDIR, "default");
+			Document::body(function()
+			{
+				Document::page("guest");
+			});
+			Document::build();
+		}
+		else
+		{
+			Document::val("path", $path->toString());
+			Document::body(function()
+			{
+				Document::page("404");
+			});
+			Document::build();
+		}
 	}
 	public static function callback($app)
 	{

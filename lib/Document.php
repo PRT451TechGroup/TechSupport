@@ -1,6 +1,21 @@
 <?php
 class Document
 {
+	private static $body;
+	private static $context;
+	private static $vars = array();
+	public static function body($val = null)
+	{
+		 if (isset($val))
+		 {
+		 	self::$body = $val;
+		 }
+		 else
+		 {
+		 	$f = self::$body;
+		 	$f();
+		 }
+	}
 	public static function js($file)
 	{
 		return sprintf('<script src="%s/js/%s.js"></script>', APPDIR, $file);
@@ -16,6 +31,36 @@ class Document
 	public static function css_root($file)
 	{
 		return sprintf('<link rel="stylesheet" href="%s/%s.css" />', APPDIR, $file);
+	}
+	public static function page($page)
+	{
+		require sprintf("%s/%s.php", PAGEDIR, $page);
+	}
+	public static function build()
+	{
+		self::page("default");
+	}
+	public static function context($val = null)
+	{
+		if (isset($val))
+		 {
+		 	self::$context = $val;
+		 }
+		 else
+		 {
+		 	return self::$context;
+		 }
+	}
+	public static function val($key, $val = null)
+	{
+		if (isset($val))
+		{
+			self::$vars[$key] = $val;
+		}
+		else
+		{
+			return self::$vars[$key];
+		}
 	}
 }
 ?>

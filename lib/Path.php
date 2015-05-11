@@ -6,8 +6,13 @@ class Path
 	public function __construct($path, $skip = 0)
 	{
 		$path = trim($path, "/");
-		$path = explode("?",$path)[0];
-		$this->spl = array_slice(explode("/",$path), $skip);
+		$path = explode("?",$path);
+		$path = $path[0];
+		
+		if (strlen($path) === 0)
+			$this->spl = array();
+		else
+			$this->spl = array_slice(explode("/",$path), $skip);
 		$this->pos = 0;
 	}
 	public function next()
@@ -40,6 +45,20 @@ class Path
 	public function hasNext()
 	{
 		return $this->pos < count($this->spl);
+	}
+	public function toString()
+	{
+		$out = "";
+		foreach($this->spl as $k => $v)
+		{
+			if ($k === $this->pos)
+				$fmt = "%s[%s] ";
+			else
+				$fmt = "%s%s ";
+
+			$out = sprintf($fmt, $out, $v);
+		}
+		return $out;
 	}
 }
 ?>

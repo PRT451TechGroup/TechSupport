@@ -1,1 +1,1 @@
-<?= "&amp;" ?>
+<a href="<?= "fyab" ?>">abcd</a>

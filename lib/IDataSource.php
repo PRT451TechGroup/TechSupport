@@ -4,8 +4,8 @@ interface IDataSource
 	public function datasource_init();
 	public function datasource_create();
 	
-	public function user_login($username, $password);
-	public function user_register($username, $password);
+	public function user_login($data);
+	public function user_register($data);
 
 	public function repair_new($data);
 	public function repair_list();
