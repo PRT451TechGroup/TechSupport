@@ -1,1 +1,3 @@
-<a href="<?= "fyab" ?>">abcd</a>
+<?php
+header("X-Redirect: /");
+?>
