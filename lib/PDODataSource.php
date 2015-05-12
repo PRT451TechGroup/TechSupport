@@ -56,7 +56,7 @@ class PDODataSource implements IDataSource
 	{
 		$data = new ArrayList($args);
 
-		if (!data.containsKey("username", "password"))
+		if (!$data->containsKey("username", "password"))
 			return false;
 
 		if (strlen($data->username) === 0 || strlen($data->password) === 0)
@@ -71,7 +71,7 @@ class PDODataSource implements IDataSource
 
 		return $conn->lastInsertId();
 	}
-
+	/*
 	public function repair_new($args)
 	{
 		$data = new ArrayList($args);
@@ -80,6 +80,6 @@ class PDODataSource implements IDataSource
 	}
 	public function repair_list();
 	public function repair_modify($data);
-	public function repair_delete($data);
+	public function repair_delete($data);*/
 }
 ?>

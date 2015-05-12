@@ -21,7 +21,7 @@ class ClientApplet
 		}
 		else
 		{
-			Document::val("path", $path->toString());
+			Bean::path($path->toString());
 			Document::body(function()
 			{
 				Document::page("404");

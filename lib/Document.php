@@ -62,9 +62,13 @@ class Document
 			return self::$vars[$key];
 		}
 	}
+	public static function text($key)
+	{
+		return htmlspecialchars(self::$vars[$key]);
+	}
 	public static function redirect($v)
 	{
-		self::val("redirect", $v);
+		Bean::redirect($v);
 		self::body(function() { self::page("redirect"); });
 		self::build();
 	}

@@ -62,5 +62,9 @@ class ArrayList
 			return $this;
 		}
 	}
+	public function toString()
+	{
+		return print_r($this->model, true);
+	}
 }
 ?>

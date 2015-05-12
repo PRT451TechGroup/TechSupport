@@ -15,6 +15,49 @@ class Path
 			$this->spl = array_slice(explode("/",$path), $skip);
 		$this->pos = 0;
 	}
+	public function match($tree)
+	{
+		$at = $tree;
+		$minpos = $this->pos;
+		while(($name = $this->next()) !== null)
+		{
+			if (strlen($name) === 0)
+				break;
+			
+			if (array_key_exists($name, $at))
+			{
+				$at = $at[$name];
+				if (is_string($at))
+					break;
+			}
+			else
+			{
+				$this->rewind();
+				break;
+			}
+		}
+
+		if (is_array($at))
+		{
+			if ($this->hasNext())
+			{
+				if (isset($at["*"]))
+					$at = $at["*"];
+			}
+			else
+			{
+				if (isset($at["."]))
+					$at = $at["."];
+				else if (isset($at["*"]))
+					$at = $at["*"];
+			}
+		}
+
+		if ($this->pos < $minpos)
+			$this->pos = $minpos;
+		
+		return $at;
+	}
 	public function next()
 	{
 		return $this->hasNext() ? $this->spl[$this->pos++] : null;

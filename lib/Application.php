@@ -4,6 +4,7 @@ class Application
 	private $arguments;
 	private $path;
 	private $doctree;
+	private $datasource;
 	public function __construct()
 	{
 	}
@@ -37,6 +38,16 @@ class Application
 		else
 			return $this->doctree;
 	}
+	public function datasource($v = null)
+	{
+		if (isset($v))
+		{
+			$this->datasource = $v;
+			return $this;
+		}
+		else
+			return $this->datasource;
+	}
 	
 	public function start()
 	{
@@ -53,13 +64,15 @@ class Application
 					break;
 			}
 			else
+			{
+				$this->path->rewind();
 				break;
+			}
 		}
 		
 		if (is_array($at) && isset($at["*"]))
 		{
 			$at = $at["*"];
-			$this->path->rewind();
 		}
 		
 		if (is_callable($at))

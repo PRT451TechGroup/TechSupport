@@ -7,6 +7,7 @@ interface IDataSource
 	public function user_login($data);
 	public function user_register($data);
 
+/*
 	public function repair_new($data);
 	public function repair_list();
 	public function repair_modify($data);
@@ -20,6 +21,6 @@ interface IDataSource
 	public function loan_new($data);
 	public function loan_list();
 	public function loan_modify($data);
-	public function loan_delete($data);
+	public function loan_delete($data);*/
 }
 ?>
