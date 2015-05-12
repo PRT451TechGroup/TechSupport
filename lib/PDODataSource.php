@@ -1,11 +1,23 @@
 <?php
+/**
+ * PDO implementation of data source
+ * @implements IDataSource
+ * @author AkariAkaori
+ */
 class PDODataSource implements IDataSource
 {
 	private $pdo_dsn;
 	private $pdo_username;
 	private $pdo_password;
 	private $pdo_options;
-	
+
+	/**
+	 * Creates a new PDO data source
+	 * @param string $dsn The Data Source Name
+	 * @param string $username The username
+	 * @param string $password The password
+	 * @param array $options The driver-specific options
+	 */
 	public function __construct($dsn, $username, $password, $options)
 	{
 		$this->pdo_dsn = $dsn;
@@ -175,9 +187,19 @@ class PDODataSource implements IDataSource
 		}
 		return false;
 	}
-	public function repair_progress()
+	public function repair_completion()
 	{
-		
+		$stmt = $this->prepare('SELECT completion, COUNT(repairid) AS repaircount, SUM(CASE WHEN priority > 0 THEN 1 ELSE 0 END) AS prioritycount FROM repairs GROUP BY completion');
+
+		if (!$stmt->execute(array()))
+			return false;
+
+		$out = array();
+		foreach($stmt->fetchAll() as $row)
+		{
+			$out[$row["completion"]] = array("repaircount" => $row["repaircount"], "prioritycount" => $row["prioritycount"]);
+		}
+		return $out;
 	}
 	public function repair_list($args)
 	{
@@ -239,17 +261,15 @@ class PDODataSource implements IDataSource
 
 		$out = array();
 
-		$index = 0;
-
 		foreach($stmt->fetchAll() as $row)
 		{
-			$out[$index] = array();
+			$eid = $row["equipmentid"];
+			$out[$eid] = array();
 			foreach($row as $key => $value)
 			{
 				if (!is_numeric($key))
-					$out[$index][$key] = $value;
+					$out[$eid][$key] = $value;
 			}
-			$index++;
 		}
 		return $out;
 	}

@@ -24,10 +24,10 @@
 	<div data-role="content">
 		<form action="<?=APPDIR?>/repair/create/<?=Bean::repairid()?>" method="POST">
 			<ul data-role="listview" data-inset="false">
-				<li class="ui-field-contain">
+				<!-- <li class="ui-field-contain">
 					<label><?=Language::owner()?></label>
 					<input type="text" disabled="disabled" value="<?=Bean::repairusername()?>" />
-				</li>
+				</li> -->
 				<li class="ui-field-contain">
 					<label><?=Language::location()?></label>
 					<fieldset class="ui-grid-b">
@@ -48,7 +48,7 @@
 						</div>
 						<div class="ui-block-c">
 							<label for="room"><?=Language::room()?></label>
-							<select name="room" value=>
+							<select name="room">
 								<?php for($i=1;$i<=25;$i++): ?>
 								<option value="<?=$i?>" <?=selected($room, $i)?>><?=$i?></option>
 								<?php endfor; ?>

@@ -54,6 +54,9 @@ class RepairApplet
 				Document::body(function() { Document::page("repair"); });
 				Document::build();
 				break;
+			case "review":
+				
+				break;
 			case "create":
 				Document::redirect(APPDIR."/repair/create/".($datasource->repair_new(array("userid" => Session::userid()))));
 				break;

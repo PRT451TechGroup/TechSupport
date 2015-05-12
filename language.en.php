@@ -33,7 +33,12 @@ Language::addString(array
 	"priority_off" => "Off",
 	"equipment" => "Equipment",
 	"nonameset" => "No Name Set",
-	"newequip" => "New Equipment"
+	"newequip" => "New Equipment",
+	"addequipment" => "Add Equipment",
+	"equipname" => "Equipment Name",
+	"assetno" => "Asset Number",
+	"equipdesc" => "Problem Description",
+	"validate_equipmentname" => "Equipment name must be alphanumeric"
 ));
 Language::addCallback("unknown_page", function($data)
 {
