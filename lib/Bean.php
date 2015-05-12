@@ -2,6 +2,24 @@
 class Bean
 {
 	private static $beanTable = array();
+	public static function extract()
+	{
+		$fga = func_get_args();
+
+		if (count($fga) > 0)
+		{
+			$extract = array();
+			foreach($fga as $key)
+			{
+				$extract[$key] = self::$beanTable[$key];
+			}
+			return $extract;
+		}
+		else
+		{
+			return self::$beanTable;
+		}
+	}
 	public static function set($name, $val = null)
 	{
 		if (is_array($name))

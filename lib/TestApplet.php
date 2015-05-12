@@ -4,7 +4,6 @@ class TestApplet
 	private $app;
 	public function __construct($app)
 	{
-		session_start();
 		$this->app = $app;
 	}
 	public function start()
@@ -16,7 +15,7 @@ class TestApplet
 			$datasource->user_login(array("username" => "H33", "password" => "ww"))
 		));*/
 		//echo $datasource->user_name(array("userid" => 1));
-		print_r($datasource->user_names());
+		throw new Exception("ABCDEFG");
 	}
 	public static function callback($app)
 	{

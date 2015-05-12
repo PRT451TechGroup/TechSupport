@@ -15,7 +15,7 @@ class Path
 			$this->spl = array_slice(explode("/",$path), $skip);
 		$this->pos = 0;
 	}
-	public function match($tree)
+	public function match($tree, &$vars = null)
 	{
 		$at = $tree;
 		$minpos = $this->pos;
@@ -29,6 +29,13 @@ class Path
 				$at = $at[$name];
 				if (is_string($at))
 					break;
+			}
+			else if (isset($at["/"]) && isset($at["*"]))
+			{
+				if (isset($vars))
+					$vars[$at["/"]] = $name;
+
+				$at = $at["*"];
 			}
 			else
 			{

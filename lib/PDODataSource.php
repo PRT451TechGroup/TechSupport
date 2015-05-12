@@ -105,15 +105,153 @@ class PDODataSource implements IDataSource
 		}
 		return $out;
 	}	
-	/*
+	
 	public function repair_new($args)
 	{
 		$data = new ArrayList($args);
 
+		if (!$data->containsKey("userid"))
+		{
+			throw new InvalidArgumentException("userid not supplied");
+			return false;
+		}
+			
+
+		if ($data->containsKey("userid", "location", "duedate", "completion", "priority"))
+		{
+			$sql = "INSERT INTO repairs (userid, location, duedate, completion, priority) VALUES (?, ?, ?, ?, ?)";
+			$vals = array($data->userid, $data->location, $data->duedate, $data->completion, $data->priority);
+		}
+		else
+		{
+			$sql = "INSERT INTO repairs (userid) VALUES (?)";
+			$vals = array($data->userid);
+		}
+
+		$conn = $this->open_connection();
+		$stmt = $conn->prepare($sql);
+		
+		if (!$stmt->execute($vals))
+			return false;
+
+		return $conn->lastInsertId();
+	}
+	public function repair_get($args)
+	{
+		$data = new ArrayList($args);
+
+		if (!$data->containsKey("repairid"))
+		{
+			throw new InvalidArgumentException("repairid not supplied");
+			return false;
+		}
+
+		$conn = $this->open_connection();
+
+		$stmt = $conn->prepare('SELECT * FROM repairs WHERE repairid = ?');
+
+		if (!$stmt->execute(array($data->repairid)))
+			return false;
+
+		$out = array();
+
+		foreach($stmt->fetchAll() as $row)
+		{
+			foreach($row as $key => $value)
+			{
+				if (!is_numeric($key))
+					$out[$key] = $value;
+			}
+
+			$cnt = $conn->prepare('SELECT COUNT(equipmentid) AS equipmentcount FROM equipment WHERE repairid = ?');
+			$cnt->execute(array($data->repairid));
+
+			foreach($cnt->fetchAll() as $crow)
+			{
+				$out["equipmentcount"] = $crow["equipmentcount"];
+			}
+			
+			return $out;
+		}
+		return false;
+	}
+	public function repair_progress()
+	{
 		
 	}
-	public function repair_list();
-	public function repair_modify($data);
-	public function repair_delete($data);*/
+	public function repair_list($args)
+	{
+	}
+	public function repair_modify($args)
+	{
+		$data = new ArrayList($args);
+
+		if (!$data->containsKey("repairid"))
+		{
+			throw new InvalidArgumentException("repairid not supplied");
+			return false;
+		}
+		if ($data->containsKey("location", "duedate", "completion", "priority"))
+		{
+			if ($data->containsKey("userid"))
+			{
+				$sql = "UPDATE repairs SET userid=?, location=?, duedate=?, completion=?, priority=? WHERE repairid=?";
+				$vals = array($data->userid, $data->location, $data->duedate, $data->completion, $data->priority, $data->repairid);
+			}
+			else
+			{
+				$sql = "UPDATE repairs SET location=?, duedate=?, completion=?, priority=? WHERE repairid=?";
+				$vals = array($data->location, $data->duedate, $data->completion, $data->priority, $data->repairid);
+			}
+		}
+		else
+		{
+			throw new InvalidArgumentException("not enough columns supplied");
+			return false;
+		}
+
+		$stmt = $this->prepare($sql);
+
+		if (!$stmt->execute($vals))
+			return false;
+		
+		return true;
+
+	}
+	public function repair_delete($data)
+	{
+	}
+
+	public function equipment_list($args)
+	{
+		$data = new ArrayList($args);
+
+		if (!$data->containsKey("repairid"))
+		{
+			throw new InvalidArgumentException("repairid not supplied");
+			return false;
+		}
+
+		$stmt = $this->prepare('SELECT * FROM equipment WHERE repairid = ?');
+
+		if (!$stmt->execute(array($data->repairid)))
+			return false;
+
+		$out = array();
+
+		$index = 0;
+
+		foreach($stmt->fetchAll() as $row)
+		{
+			$out[$index] = array();
+			foreach($row as $key => $value)
+			{
+				if (!is_numeric($key))
+					$out[$index][$key] = $value;
+			}
+			$index++;
+		}
+		return $out;
+	}
 }
 ?>

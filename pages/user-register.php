@@ -1,7 +1,8 @@
-<div data-role="page" data-back="<?=APPDIR?>/user">
+<div data-role="page" data-back="<?=APPDIR.Bean::back()?>">
 	<div data-role="header">
 		<h1><?=Language::register()?></h1>
-		<a href="#" data-rel="back" class="ui-btn-left ui-btn ui-icon-back ui-btn-icon-notext ui-shadow ui-corner-all"><?=Language::back()?></a>
+		<?=Widgets::logout()?>
+		<?=Widgets::back()?>
 	</div>
 	<div data-role="content">
 		<form action="<?=APPDIR?>/user/register/submit" method="POST">

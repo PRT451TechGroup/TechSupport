@@ -1,9 +1,10 @@
-<div data-role="page" data-back="<?=APPDIR?>/">
+<div data-role="page" data-back="<?=APPDIR.Bean::back()?>">
 	<div data-role="header" data-position="fixed">
 		<h1><?=Language::techsupport()?></h1>
-		<a href="#" data-rel="back" class="ui-btn-left ui-btn ui-icon-back ui-btn-icon-notext ui-shadow ui-corner-all">Back</a>
+		<?=Widgets::logout()?>
+		<?=Widgets::back()?>
 	</div>
 	<div data-role="content">
-		<p><?=Language::unknown_page(array("path" => Bean::path()))?></p>
+		<p><?=Language::unknown_page(Bean::extract("path"))?></p>
 	</div>
 </div>

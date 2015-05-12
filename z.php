@@ -1,3 +1,0 @@
-<?php
-header("X-Redirect: /");
-?>

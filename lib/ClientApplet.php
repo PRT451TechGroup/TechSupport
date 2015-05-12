@@ -4,7 +4,6 @@ class ClientApplet
 	private $app;
 	public function __construct($app)
 	{
-		session_start();
 		$this->app = $app;
 	}
 	public function start()
@@ -22,6 +21,7 @@ class ClientApplet
 		else
 		{
 			Bean::path($path->toString());
+			Bean::back("/");
 			Document::body(function()
 			{
 				Document::page("404");

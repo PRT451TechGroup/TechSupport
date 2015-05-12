@@ -16,6 +16,7 @@ class Document
 		 	$f();
 		 }
 	}
+	
 	public static function js($file)
 	{
 		return sprintf('<script src="%s/js/%s.js"></script>', APPDIR, $file);

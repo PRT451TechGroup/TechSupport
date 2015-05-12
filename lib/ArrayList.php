@@ -9,9 +9,23 @@ class ArrayList
 		else
 			$this->model = $model;
 	}
-	public function toArray()
+	public static function toArray()
 	{
-		return $this->model;
+		$fga = func_get_args();
+
+		if (count($fga) > 0)
+		{
+			$extract = array();
+			foreach($fga as $key)
+			{
+				$extract[$key] = $this->model[$key];
+			}
+			return $extract;
+		}
+		else
+		{
+			return $this->model;
+		}
 	}
 	public function length()
 	{

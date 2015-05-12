@@ -51,6 +51,8 @@ class Application
 	
 	public function start()
 	{
+		Session::datasource($this->datasource);
+		Session::start();
 		$at = $this->doctree;
 		while(($name = $this->path->next()) !== null)
 		{
