@@ -6,7 +6,7 @@ define("PAGEDIR", DOCPATH . "/pages");
 define("APPDIR", "/techsupport");
 $datasource = function()
 {
-	return new PDODataSource("mysql:database=prt451gr_db;host=localhost", "prt451gr_db", "change_password", array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+	return new PDODataSource("mysql:host=localhost;dbname=prt451gr_db", "prt451gr_db", "change_password", array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 };
 
 ?>

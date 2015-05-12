@@ -19,7 +19,7 @@ class Authenticator
 	}
 	public static function from_hash($hash, $salt)
 	{
-		return new Authenticator($has, $salt);
+		return new Authenticator($hash, $salt);
 	}
 	public function hash($val = null)
 	{

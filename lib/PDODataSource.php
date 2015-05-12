@@ -32,7 +32,7 @@ class PDODataSource implements IDataSource
 	{
 		$data = new ArrayList($args);
 		
-		if (!data.containsKey("username", "password"))
+		if (!$data->containsKey("username", "password"))
 			return false;
 
 		if (strlen($data->username) === 0 || strlen($data->password) === 0)
@@ -48,7 +48,7 @@ class PDODataSource implements IDataSource
 		{
 			$auth = Authenticator::from_hash($row["hash"], $row["salt"]);
 			if ($auth->verify($data->password))
-				return intval($res["userid"]);
+				return intval($row["userid"]);
 		}
 		return false;
 	}
@@ -71,6 +71,40 @@ class PDODataSource implements IDataSource
 
 		return $conn->lastInsertId();
 	}
+	public function user_name($args)
+	{
+		$data = new ArrayList($args);
+		
+		if (!$data->containsKey("userid"))
+			return false;
+
+		$stmt = $this->prepare('SELECT username FROM users WHERE userid = ?');
+
+		if (!$stmt->execute(array(intval($data->userid))))
+			return false;
+
+		$res = $stmt->fetchAll();
+		foreach($res as $row)
+		{
+			return $row["username"];
+		}
+		return false;
+	}
+	public function user_names()
+	{
+		$stmt = $this->prepare('SELECT userid, username FROM users');
+
+		if (!$stmt->execute())
+			return false;
+
+		$res = $stmt->fetchAll();
+		$out = array();
+		foreach($res as $row)
+		{
+			$out[strval($row["userid"])] = $row["username"];
+		}
+		return $out;
+	}	
 	/*
 	public function repair_new($args)
 	{

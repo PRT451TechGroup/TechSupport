@@ -20,7 +20,8 @@ function startApplication()
 		"repair" => function($v) { RepairApplet::callback($v); },
 		"request" => function($v) { RequestApplet::callback($v); },
 		"loan" => function($v) { LoanApplet::callback($v); },
-		"js" => function($v) { ScriptApplet::callback($v); }
+		"js" => function($v) { ScriptApplet::callback($v); },
+		"test" => function($v) { TestApplet::callback($v); }
 	));
 	$app->start();
 }
