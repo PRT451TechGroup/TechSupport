@@ -44,7 +44,18 @@ Language::addString(array
 	"completion_label" => "Completion",
 	"job_priority" => "Priority",
 	"job_normal" => "Normal",
-	"job_none" => "None"
+	"job_none" => "None",
+	"loan" => "Loan",
+	"request" => "Staff Requests",
+	"year" => "Year",
+	"month" => "Month",
+	"day" => "Day",
+	"hour" => "Hour",
+	"minute" => "Minutes",
+	"date_due" => "Date",
+	"time_due" => "Time",
+	"jobname" => "Job Name",
+	"complainer" => "Complainer"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",
@@ -63,5 +74,10 @@ Language::addCallback("completion", function($data)
 {
 	$a = array("Not Done", "Partially Done", "Half Done", "Almost Done", "Done");
 	return $a[$data["completion"]];
+});
+Language::addCallback("monthat", function($data)
+{
+	$a = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+	return $a[$data["month"]];
 });
 ?>

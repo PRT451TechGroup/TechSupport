@@ -184,10 +184,10 @@ class PDODataSource implements IDataSource
 		}
 			
 
-		if ($data->containsKey("userid", "location", "duedate", "completion", "priority"))
+		if ($data->containsKey("userid", "complainer", "name", "location", "duedate", "completion", "priority"))
 		{
-			$sql = "INSERT INTO repairs (userid, location, duedate, completion, priority) VALUES (?, ?, ?, ?, ?)";
-			$vals = array($data->userid, $data->location, $data->duedate, $data->completion, $data->priority);
+			$sql = "INSERT INTO repairs (userid, name, complainer, location, duedate, completion, priority) VALUES (?, ?, ?, ?, ?, ?)";
+			$vals = array($data->userid, $data->name, $data->complainer, $data->location, $data->duedate, $data->completion, $data->priority);
 		}
 		else
 		{
@@ -264,17 +264,17 @@ class PDODataSource implements IDataSource
 			throw new InvalidArgumentException("repairid not supplied");
 			return false;
 		}
-		if ($data->containsKey("location", "duedate", "completion", "priority"))
+		if ($data->containsKey("name", "complainer", "location", "duedate", "completion", "priority"))
 		{
 			if ($data->containsKey("userid"))
 			{
-				$sql = "UPDATE repairs SET userid=?, location=?, duedate=?, completion=?, priority=? WHERE repairid=?";
-				$vals = array($data->userid, $data->location, $data->duedate, $data->completion, $data->priority, $data->repairid);
+				$sql = "UPDATE repairs SET userid=?, name=?, complainer=?, location=?, duedate=?, completion=?, priority=? WHERE repairid=?";
+				$vals = array($data->userid, $data->name, $data->complainer, $data->location, $data->duedate, $data->completion, $data->priority, $data->repairid);
 			}
 			else
 			{
-				$sql = "UPDATE repairs SET location=?, duedate=?, completion=?, priority=? WHERE repairid=?";
-				$vals = array($data->location, $data->duedate, $data->completion, $data->priority, $data->repairid);
+				$sql = "UPDATE repairs SET name=?, complainer=?, location=?, duedate=?, completion=?, priority=? WHERE repairid=?";
+				$vals = array($data->name, $data->complainer, $data->location, $data->duedate, $data->completion, $data->priority, $data->repairid);
 			}
 		}
 		else

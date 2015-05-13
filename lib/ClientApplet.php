@@ -12,11 +12,18 @@ class ClientApplet
 
 		if (!$path->hasNext())
 		{
-			Document::body(function()
+			if (Session::verify())
 			{
-				Document::page("guest");
-			});
-			Document::build();
+				Document::body(function()
+				{
+					Document::page("guest");
+				});
+				Document::build();
+			}
+			else
+			{
+				Document::redirect(APPDIR.'/user');
+			}
 		}
 		else
 		{

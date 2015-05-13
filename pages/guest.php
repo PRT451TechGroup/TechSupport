@@ -5,8 +5,9 @@
 	</div>
 	<div data-role="content">
 		<ul data-role="listview" data-inset="true">
-			<li data-icon="user"><a href="<?=APPDIR?>/user" data-transition="slide"><?=Language::user()?></a></li>
 			<li data-icon="gear"><a href="<?=APPDIR?>/repair" data-transition="slide"><?=Language::repair()?></a></li>
+			<li data-icon="mail"><a href="<?=APPDIR?>/request" data-transition="slide"><?=Language::request()?></a></li>
+			<li data-icon="recycle"><a href="<?=APPDIR?>/loan" data-transition="slide"><?=Language::loan()?></a></li>
 		</ul>
 	</div>
 </div>

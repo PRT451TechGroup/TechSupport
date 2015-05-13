@@ -15,7 +15,7 @@ class TestApplet
 			$datasource->user_login(array("username" => "H33", "password" => "ww"))
 		));*/
 		//echo $datasource->user_name(array("userid" => 1));
-		throw new Exception("ABCDEFG");
+		throw new Exception(Session::userid());
 	}
 	public static function callback($app)
 	{

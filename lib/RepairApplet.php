@@ -93,7 +93,7 @@ class RepairApplet
 				Document::build();
 				break;
 			case "review-repair":
-				if ($args->containsKey("building", "floor", "room", "duedate", "priority", "completion"))
+				if ($args->containsKey("name", "complainer", "building", "floor", "room", "year", "month", "day", "hour", "minute", "priority", "completion"))
 				{
 					if (!is_numeric($args->building))
 						throw new Exception("building is not numeric");
@@ -108,12 +108,16 @@ class RepairApplet
 
 					$rv = $datasource->repair_modify(array
 					(
+						"name" => $args->name,
+						"complainer" => $args->complainer,
 						"repairid" => $matchvars["repairid"],
 						"location" => sprintf("%s.%s.%s", $args->building, $args->floor, $args->room),
-						"duedate" => $args->duedate,
+						"duedate" => sprintf("%s-%s-%s %s:%s:00", $args->year, $args->month, $args->day, $args->hour, $args->minute),
 						"completion" => $args->completion,
 						"priority" => $args->priority
 					));
+					
+					$redirect = true;
 
 					//throw new Exception(sprintf("%s.%s.%s", $args->building, $args->floor, $args->room));
 				}
@@ -121,6 +125,13 @@ class RepairApplet
 				$repairid = $matchvars["repairid"];
 				$repair = new ArrayList($datasource->repair_get(array("repairid" => $repairid)));
 				$completion = $repair->completion;
+				
+				if (isset($redirect))
+				{
+					Document::redirect(APPDIR."/repair/review/$completion");
+					break;
+				}
+				
 				Bean::repairid($repairid);
 				Bean::completion($completion);
 				Bean::repair($repair);
@@ -134,7 +145,7 @@ class RepairApplet
 				Document::redirect(APPDIR."/repair/create/".($datasource->repair_new(array("userid" => Session::userid()))));
 				break;
 			case "create-show":
-				if ($args->containsKey("building", "floor", "room", "duedate", "priority"))
+				if ($args->containsKey("name", "complainer", "building", "floor", "room", "year", "month", "day", "hour", "minute", "priority"))
 				{
 					if (!is_numeric($args->building))
 						throw new Exception("building is not numeric");
@@ -147,12 +158,17 @@ class RepairApplet
 
 					$rv = $datasource->repair_modify(array
 					(
+						"name" => $args->name,
+						"complainer" => $args->complainer,
 						"repairid" => $matchvars["repairid"],
 						"location" => sprintf("%s.%s.%s", $args->building, $args->floor, $args->room),
-						"duedate" => $args->duedate,
+						"duedate" => sprintf("%s-%s-%s %s:%s:00", $args->year, $args->month, $args->day, $args->hour, $args->minute),
 						"completion" => 0,
 						"priority" => $args->priority
 					));
+					
+					Document::redirect(APPDIR."/repair");
+					break;
 
 					//throw new Exception(sprintf("%s.%s.%s", $args->building, $args->floor, $args->room));
 				}

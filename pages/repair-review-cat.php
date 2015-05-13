@@ -7,6 +7,10 @@
 	<?php
 		$theme = "cdefgh";
 		$theme = $theme{Bean::completion()};
+		function jobname($repair)
+		{
+			return (strlen($repair["name"]) > 0) ? $repair["name"] : ("Job #" . $repair["repairid"]);
+		}
 	?>
 	<div data-role="content">
 		<ul data-role="listview" class="jobreview" data-theme="<?=$theme?>">
@@ -20,7 +24,7 @@
 			<?php endif; ?>
 			<li>
 				<a href="<?=APPDIR?>/repair/review/<?=Bean::completion().'/'.$repairid?>" data-transition="slide">
-					Repair Job #<?=$repairid?><span class="ui-li-count"><?=$repair["location"]?></span>
+					<?=jobname($repair)?><span class="ui-li-count"><?=$repair["location"]?></span>
 				</a>
 			</li>
 			<?php endif; ?>
@@ -35,7 +39,7 @@
 			<?php endif; ?>
 			<li>
 				<a href="<?=APPDIR?>/repair/review/<?=Bean::completion().'/'.$repairid?>" data-transition="slide">
-					Repair Job #<?=$repairid?><span class="ui-li-count"><?=$repair["location"]?></span>
+					<?=jobname($repair)?><span class="ui-li-count"><?=$repair["location"]?></span>
 				</a>
 			</li>
 			<?php endif; ?>

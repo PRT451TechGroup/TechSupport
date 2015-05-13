@@ -14,14 +14,9 @@ class UserApplet
 		
 		$match = $path->match(array
 		(
-			"." => "user",
+			"." => "login",
 			"*" => "default",
-			"login" => array
-			(
-				"." => "login",
-				"*" => "default",
-				"submit" => "login-submit"
-			),
+			"login" => "login-submit",
 			"register" => array
 			(
 				"." => "register",
@@ -47,14 +42,16 @@ class UserApplet
 					{
 						Session::userid($uid);
 						Session::username($args->username);
-						Bean::username($args->username);
+						Document::redirect(APPDIR.'/');
+						/*Bean::username($args->username);
 						Bean::back("/");
 						Document::body(function() { Document::page("login-success"); });
-						Bean::back("/user");Document::build();
+						Bean::back("/user");
+						Document::build();*/
 					}
 					else
 					{
-						Bean::back("/user/login");
+						Bean::back("/user");
 						Bean::error(Language::badlogin());
 						Document::body(function() { Document::page("login-error"); });
 						Document::build();
@@ -62,7 +59,7 @@ class UserApplet
 				}
 				else
 				{
-					Document::redirect(APPDIR."/user/login");
+					Document::redirect(APPDIR."/user");
 				}
 				break;
 			case "login":
@@ -100,9 +97,7 @@ class UserApplet
 						
 
 						$uid = $datasource->user_register(array("username" => $args->username, "password" => $args->password));
-						Bean::retval(array("retval" => $uid));
-						Document::body(function() { print_r(Bean::retval()); });
-						Document::build();
+						Document::redirect(APPDIR."/");
 					}
 				}
 				else
