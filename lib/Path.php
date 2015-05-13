@@ -21,11 +21,13 @@ class Path
 		$minpos = $this->pos;
 		while(($name = $this->next()) !== null)
 		{
+			
 			if (strlen($name) === 0)
 				break;
 			
 			if (array_key_exists($name, $at))
 			{
+				
 				$at = $at[$name];
 				if (is_string($at))
 					break;

@@ -33,11 +33,57 @@ class PDODataSource implements IDataSource
 	{
 		return $this->open_connection()->prepare($stmt);
 	}
+	private function execute($sql, $data)
+	{
+		return $this->prepare($sql)->execute($data);
+	}
+	private function insert($sql, $data)
+	{
+		$conn = $this->open_connection();
+		$stmt = $conn->prepare($sql);
+
+		if (!$stmt->execute($data))
+			return false;
+
+		return $conn->lastInsertId();
+	}
+	private function select($sql, $data)
+	{
+		$stmt = $this->prepare($sql);
+
+		if (!$stmt->execute($data))
+			return false;
+
+		return $stmt->fetchAll();
+	}
 	public function datasource_init()
 	{
 	}
 	public function datasource_create()
 	{
+	}
+	private static function rowcopy($row)
+	{
+		$out = array();
+
+		foreach($row as $key => $value)
+		{
+			if (!is_numeric($key))
+				$out[$key] = $value;
+		}
+		
+		return $out;
+	}
+	private static function tablecopy($table, $indexfield)
+	{
+		$out = array();
+
+		foreach($table as $row)
+		{
+			$out[$row[$indexfield]] = self::rowcopy($row);
+		}
+
+		return $out;
 	}
 
 	public function user_login($args)
@@ -50,12 +96,16 @@ class PDODataSource implements IDataSource
 		if (strlen($data->username) === 0 || strlen($data->password) === 0)
 			return false;
 
-		$stmt = $this->prepare('SELECT userid, hash, salt FROM users WHERE username = ?');
+		$res = $this->select
+		(
+			'SELECT userid, hash, salt FROM users WHERE username = ?',
+			array($data->username)
+		);
 
-		if (!$stmt->execute(array($data->username)))
+		if (!$res)
 			return false;
 
-		$res = $stmt->fetchAll();
+		
 		foreach($res as $row)
 		{
 			$auth = Authenticator::from_hash($row["hash"], $row["salt"]);
@@ -74,14 +124,14 @@ class PDODataSource implements IDataSource
 		if (strlen($data->username) === 0 || strlen($data->password) === 0)
 			return false;
 
-		$conn = $this->open_connection();
-		$stmt = $conn->prepare('INSERT INTO users (username, hash, salt) VALUES (?, ?, ?)');
 		$auth = Authenticator::from_password($data->password);
 
-		if (!$stmt->execute(array($data->username, $auth->hash(), $auth->salt())))
-			return false;
-
-		return $conn->lastInsertId();
+		return $this->insert
+		(
+			'INSERT INTO users (username, hash, salt) VALUES (?, ?, ?)',
+			array($data->username, $auth->hash(), $auth->salt())
+		);
+		
 	}
 	public function user_name($args)
 	{
@@ -90,12 +140,14 @@ class PDODataSource implements IDataSource
 		if (!$data->containsKey("userid"))
 			return false;
 
-		$stmt = $this->prepare('SELECT username FROM users WHERE userid = ?');
 
-		if (!$stmt->execute(array(intval($data->userid))))
+		$res = $this->select
+		(
+			'SELECT username FROM users WHERE userid = ?',
+			array(intval($data->userid))
+		);
+		if (!$res)
 			return false;
-
-		$res = $stmt->fetchAll();
 		foreach($res as $row)
 		{
 			return $row["username"];
@@ -104,12 +156,15 @@ class PDODataSource implements IDataSource
 	}
 	public function user_names()
 	{
-		$stmt = $this->prepare('SELECT userid, username FROM users');
+		$res = $this->select
+		(
+			'SELECT userid, username FROM users',
+			array()
+		);
 
-		if (!$stmt->execute())
+		if (!$res)
 			return false;
 
-		$res = $stmt->fetchAll();
 		$out = array();
 		foreach($res as $row)
 		{
@@ -140,13 +195,7 @@ class PDODataSource implements IDataSource
 			$vals = array($data->userid);
 		}
 
-		$conn = $this->open_connection();
-		$stmt = $conn->prepare($sql);
-		
-		if (!$stmt->execute($vals))
-			return false;
-
-		return $conn->lastInsertId();
+		return $this->insert($sql, $vals);
 	}
 	public function repair_get($args)
 	{
@@ -158,27 +207,21 @@ class PDODataSource implements IDataSource
 			return false;
 		}
 
-		$conn = $this->open_connection();
-
-		$stmt = $conn->prepare('SELECT * FROM repairs WHERE repairid = ?');
-
-		if (!$stmt->execute(array($data->repairid)))
-			return false;
-
 		$out = array();
 
-		foreach($stmt->fetchAll() as $row)
+		foreach($this->select
+		(
+			'SELECT * FROM repairs WHERE repairid = ?',
+			array($data->repairid)
+		) as $row)
 		{
-			foreach($row as $key => $value)
-			{
-				if (!is_numeric($key))
-					$out[$key] = $value;
-			}
+			$out = static::rowcopy($row);
 
-			$cnt = $conn->prepare('SELECT COUNT(equipmentid) AS equipmentcount FROM equipment WHERE repairid = ?');
-			$cnt->execute(array($data->repairid));
-
-			foreach($cnt->fetchAll() as $crow)
+			foreach($this->select
+			(
+				'SELECT COUNT(equipmentid) AS equipmentcount FROM equipment WHERE repairid = ?',
+				array($data->repairid)
+			) as $crow)
 			{
 				$out["equipmentcount"] = $crow["equipmentcount"];
 			}
@@ -189,20 +232,28 @@ class PDODataSource implements IDataSource
 	}
 	public function repair_completion()
 	{
-		$stmt = $this->prepare('SELECT completion, COUNT(repairid) AS repaircount, SUM(CASE WHEN priority > 0 THEN 1 ELSE 0 END) AS prioritycount FROM repairs GROUP BY completion');
-
-		if (!$stmt->execute(array()))
-			return false;
-
-		$out = array();
-		foreach($stmt->fetchAll() as $row)
-		{
-			$out[$row["completion"]] = array("repaircount" => $row["repaircount"], "prioritycount" => $row["prioritycount"]);
-		}
-		return $out;
+		return static::tablecopy($this->select
+		(
+			'SELECT completion, COUNT(repairid) AS repaircount, SUM(CASE WHEN priority > 0 THEN 1 ELSE 0 END) AS prioritycount FROM repairs GROUP BY completion',
+			array()
+		), "completion");
 	}
 	public function repair_list($args)
 	{
+		$data = new ArrayList($args);
+
+		if (!$data->containsKey("completion"))
+		{
+			$sql = "SELECT * FROM repairs";
+			$vals = array();
+		}
+		else
+		{
+			$sql = "SELECT * FROM repairs WHERE completion = ?";
+			$vals = array($data->completion);
+		}
+
+		return static::tablecopy($this->select($sql, $vals), "repairid");
 	}
 	public function repair_modify($args)
 	{
@@ -232,16 +283,15 @@ class PDODataSource implements IDataSource
 			return false;
 		}
 
-		$stmt = $this->prepare($sql);
-
-		if (!$stmt->execute($vals))
-			return false;
-		
-		return true;
+		return $this->execute($sql, $vals);
 
 	}
-	public function repair_delete($data)
+	public function repair_delete($args)
 	{
+		$data = new ArrayList($args);
+		return
+			$this->execute('DELETE FROM equipment WHERE repairid=?', array($data->repairid)) &&
+			$this->execute('DELETE FROM repairs WHERE repairid=?', array($data->repairid));
 	}
 
 	public function equipment_list($args)
@@ -253,25 +303,83 @@ class PDODataSource implements IDataSource
 			throw new InvalidArgumentException("repairid not supplied");
 			return false;
 		}
+		
+		$out = array();
 
-		$stmt = $this->prepare('SELECT * FROM equipment WHERE repairid = ?');
+		return static::tablecopy($this->select
+		(
+			'SELECT * FROM equipment WHERE repairid = ?',
+			array($data->repairid)
+		), "equipmentid");
+	}
+	public function equipment_new($args)
+	{
+		$data = new ArrayList($args);
 
-		if (!$stmt->execute(array($data->repairid)))
+		if (!$data->containsKey("repairid"))
+		{
+			throw new InvalidArgumentException("repairid not supplied");
+		}
+		if (!$data->containsKey("equipmentname", "assetno", "description"))
+		{
+			throw new InvalidArgumentException("not enough columns supplied");
+		}
+
+		return $this->insert
+		(
+			'INSERT INTO equipment (repairid, equipmentname, assetno, description) VALUES (?, ?, ?, ?)',
+			array($data->repairid, $data->equipmentname, $data->assetno, $data->description)
+		);
+	}
+	public function equipment_get($args)
+	{
+		$data = new ArrayList($args);
+
+		if (!$data->containsKey("equipmentid"))
+		{
+			throw new InvalidArgumentException("equipmentid not supplied");
 			return false;
+		}
 
 		$out = array();
 
-		foreach($stmt->fetchAll() as $row)
+		foreach($this->select
+		(
+			'SELECT * FROM equipment WHERE equipmentid = ?',
+			array($data->equipmentid)
+		) as $row)
 		{
-			$eid = $row["equipmentid"];
-			$out[$eid] = array();
-			foreach($row as $key => $value)
-			{
-				if (!is_numeric($key))
-					$out[$eid][$key] = $value;
-			}
+			return static::rowcopy($row);
 		}
-		return $out;
+		return false;
+	}
+	public function equipment_delete($args)
+	{
+		$data = new ArrayList($args);
+		$rv = $this->execute('DELETE FROM equipment WHERE equipmentid=?', array($data->equipmentid));
+		if (!$rv)
+			throw new Exception($rv);
+		return $rv;
+	}
+	public function equipment_modify($args)
+	{
+		$data = new ArrayList($args);
+
+
+		if (!$data->containsKey("equipmentid"))
+		{
+			throw new InvalidArgumentException("equipmentid not supplied");
+		}
+		if (!$data->containsKey("equipmentname", "assetno", "description"))
+		{
+			throw new InvalidArgumentException("not enough columns supplied");
+		}
+
+		return $this->execute
+		(
+			'UPDATE equipment SET equipmentname=?, assetno=?, description=? WHERE equipmentid = ?',
+			array($data->equipmentname, $data->assetno, $data->description, $data->equipmentid)
+		);
 	}
 }
 ?>

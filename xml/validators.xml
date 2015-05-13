@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8">
+<validators>
+	<validator selector="[data-validator='equipment-create']">
+		<field selector="[name='equipmentname']">
+			<requirement message="#validate_equipmentname0">
+				<regex target="javascript" invert="true">^$<regex>
+				<regex target="php" invert="true" delimiter="/">/^$/</regex>
+			</requirement>
+			<requirement message="#validate_equipmentname1">
+				<regex target="javascript">^(\w+|\w+[-\w ]*\w+)$</regex>
+				<regex target="php" delimiter="/">/^(\w+|\w+[-\w ]*\w+)$/</regex>
+			</requirement>
+		</field>
+		<field selector="[name='assetno']">
+			<reguirement message="#validate_assetno">
+				<regex target="javascript">^(\w+|\w+[-\w ]*\w+)$</regex>
+				<regex target="php" delimiter="/">/^(\w+|\w+[-\w ]*\w+)$/</regex>
+			</requirement>
+		</field>
+	</validator>
+</validators>

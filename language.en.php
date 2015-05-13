@@ -21,6 +21,7 @@ Language::addString(array
 	"logout_success" => "Logged out successfully",
 	"repair_review" => "Review Jobs",
 	"repair_create" => "Create Job",
+	"repair_edit" => "Edit Job",
 	"save" => "Save",
 	"owner" => "Owner",
 	"location" => "Location",
@@ -38,7 +39,17 @@ Language::addString(array
 	"equipname" => "Equipment Name",
 	"assetno" => "Asset Number",
 	"equipdesc" => "Problem Description",
-	"validate_equipmentname" => "Equipment name must be alphanumeric"
+	"editequip" => "Edit Equipment",
+	"delete" => "Delete",
+	"completion_label" => "Completion",
+	"job_priority" => "Priority",
+	"job_normal" => "Normal",
+	"job_none" => "None"
+));
+Language::addString(array(
+	"validate_equipmentname0" => "Equipment name cannot be empty",
+	"validate_equipmentname1" => "Equipment name must consist of alphanumeric characters and may not end or start with spaces",
+	"validate_assetno" => "Asset number must consist of alphanumeric characters and may not end or start with spaces"
 ));
 Language::addCallback("unknown_page", function($data)
 {
@@ -47,5 +58,10 @@ Language::addCallback("unknown_page", function($data)
 Language::addCallback("goodlogin", function($data)
 {
 	return "Successfully logged in as " . $data["username"];
+});
+Language::addCallback("completion", function($data)
+{
+	$a = array("Not Done", "Partially Done", "Half Done", "Almost Done", "Done");
+	return $a[$data["completion"]];
 });
 ?>

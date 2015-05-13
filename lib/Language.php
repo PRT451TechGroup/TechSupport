@@ -51,7 +51,7 @@ class Language
 		}
 		else
 		{
-			throw new MemberAccessException('Resource ' . $name . ' does not exist');
+			throw new Exception('Resource ' . $name . ' does not exist');
 		}
 	}
 }

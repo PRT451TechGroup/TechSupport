@@ -1,4 +1,4 @@
-<div data-role="page" data-back="<?=APPDIR.Bean::back()?>">
+<div data-role="page" data-back="<?=APPDIR.Bean::back()?>" data-force-refresh="true">
 	<div data-role="header">
 		<h1><?=Language::equipment()?></h1>
 		<?=Widgets::logout()?>
@@ -9,11 +9,11 @@
 		{
 			$aa = $eq["assetno"];
 			$ee = $eq["equipmentname"];
-			$a = strlen($a) > 0;
-			$e = strlen($e) > 0;
+			$a = strlen($aa) > 0;
+			$e = strlen($ee) > 0;
 			if ($a && $e)
 			{
-				return $aa." - ".$ee;
+				return $ee." - ".$aa;
 			}
 			else if ($a)
 			{

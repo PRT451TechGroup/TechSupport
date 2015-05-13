@@ -69,6 +69,8 @@ class Document
 	}
 	public static function redirect($v)
 	{
+		header("Location: $v");
+		return;
 		Bean::redirect($v);
 		self::body(function() { self::page("redirect"); });
 		self::build();

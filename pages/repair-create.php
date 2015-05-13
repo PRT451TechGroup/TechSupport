@@ -1,4 +1,4 @@
-<div data-role="page" data-back="<?=APPDIR.Bean::back()?>" data-dom-cache="true">
+<div data-role="page" data-back="<?=APPDIR.Bean::back()?>">
 	<div data-role="header">
 		<h1><?=Language::repair_create()?></h1>
 		<?=Widgets::logout()?>
@@ -22,7 +22,8 @@
 		}
 	?>
 	<div data-role="content">
-		<form action="<?=APPDIR?>/repair/create/<?=Bean::repairid()?>" method="POST">
+		<form action="<?=APPDIR?>/repair/create/<?=Bean::repairid()?>" method="POST" data-ajax="false">
+			<input type="hidden" name="__method" value="repair-create" />
 			<ul data-role="listview" data-inset="false">
 				<!-- <li class="ui-field-contain">
 					<label><?=Language::owner()?></label>
