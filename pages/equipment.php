@@ -1,8 +1,8 @@
-<div data-role="page" data-back="<?=APPDIR.Bean::back()?>" data-force-refresh="true">
+<div data-role="page" data-back="<?=APPDIR.$back?>" data-force-refresh="true">
 	<div data-role="header">
 		<h1><?=Language::equipment()?></h1>
 		<?=Widgets::logout()?>
-		<?=Widgets::back()?>
+		<?=Widgets::back($back)?>
 	</div>
 	<?php
 		function equipname($eq)
@@ -31,9 +31,9 @@
 	?>
 	<div data-role="content">
 		<ul data-role="listview">
-			<li data-icon="plus"><a href="<?=APPDIR.Bean::back()?>/equipment/create" data-transition="slide"><?=Language::newequip()?></a></li>
-			<?php foreach(Bean::equipment() as $equipment): ?>
-			<li><a href="<?=APPDIR.Bean::back()?>/equipment/<?=$equipment['equipmentid']?>" data-transition="slide"><?=equipname($equipment)?></a></li>
+			<li data-icon="plus"><a href="<?=APPDIR.$back?>/equipment/create" data-transition="slide"><?=Language::newequip()?></a></li>
+			<?php foreach($equipment as $equip): ?>
+			<li><a href="<?=APPDIR.$back?>/equipment/<?=$equip['equipmentid']?>" data-transition="slide"><?=equipname($equip)?></a></li>
 			<?php endforeach; ?>
 		</ul>
 	</div>

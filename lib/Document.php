@@ -33,9 +33,10 @@ class Document
 	{
 		return sprintf('<link rel="stylesheet" href="%s/%s.css" />', APPDIR, $file);
 	}
-	public static function page($page)
+	public static function page($__page, $__vars = array())
 	{
-		require sprintf("%s/%s.php", PAGEDIR, $page);
+		extract($__vars);
+		include sprintf("%s/%s.php", PAGEDIR, $__page);
 	}
 	public static function build()
 	{

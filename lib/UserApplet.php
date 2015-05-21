@@ -26,12 +26,12 @@ class UserApplet
 			"logout" => "logout"
 		));
 
-		
+		$_PAGE = array();
 		switch($match)
 		{
 			case "user":
-				Bean::back("/");
-				Document::body(function() { Document::page("user"); });
+				$_PAGE["back"] = "/";
+				Document::body(function() use($_PAGE) { Document::page("user", $_PAGE); });
 				Document::build();
 				break;
 			case "login-submit":
@@ -51,9 +51,9 @@ class UserApplet
 					}
 					else
 					{
-						Bean::back("/user");
-						Bean::error(Language::badlogin());
-						Document::body(function() { Document::page("login-error"); });
+						$_PAGE["back"] = "/user";
+						$_PAGE["error"] = Language::badlogin();
+						Document::body(function() use($_PAGE) { Document::page("login-error", $_PAGE); });
 						Document::build();
 					}
 				}
@@ -63,13 +63,13 @@ class UserApplet
 				}
 				break;
 			case "login":
-				Bean::back("/user");
-				Document::body(function() { Document::page("user-login"); });
+				$_PAGE["back"] = "/user";
+				Document::body(function() use($_PAGE) { Document::page("user-login", $_PAGE); });
 				Document::build();
 				break;
 			case "register":
-				Bean::back("/user");
-				Document::body(function() { Document::page("user-register"); });
+				$_PAGE["back"] = "/user";
+				Document::body(function() use($_PAGE) { Document::page("user-register", $_PAGE); });
 				Document::build();
 				break;
 			case "register-submit":
@@ -107,8 +107,8 @@ class UserApplet
 				break;
 			case "logout":
 				Session::clear();
-				Bean::back("/user");
-				Document::body(function() { Document::page("user-logout"); });
+				$_PAGE["back"] = "/user";
+				Document::body(function() use($_PAGE) { Document::page("user-logout", $_PAGE); });
 				Document::build();
 				break;
 			case "default":

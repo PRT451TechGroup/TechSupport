@@ -1,8 +1,8 @@
-<div data-role="page" data-back="<?=APPDIR.Bean::back()?>">
+<div data-role="page" data-back="<?=APPDIR.$back?>">
 	<div data-role="header">
 		<h1><?=Language::repair()?></h1>
 		<?=Widgets::logout()?>
-		<?=Widgets::back()?>
+		<?=Widgets::back($back)?>
 	</div>
 	<div data-role="content">
 		<ul data-role="listview" data-inset="true">

@@ -219,7 +219,7 @@ class PDODataSource implements IDataSource
 
 			foreach($this->select
 			(
-				'SELECT COUNT(equipmentid) AS equipmentcount FROM equipment WHERE repairid = ?',
+				'SELECT COUNT(equipmentid) AS equipmentcount FROM repairequipment WHERE repairid = ?',
 				array($data->repairid)
 			) as $crow)
 			{
@@ -290,11 +290,11 @@ class PDODataSource implements IDataSource
 	{
 		$data = new ArrayList($args);
 		return
-			$this->execute('DELETE FROM equipment WHERE repairid=?', array($data->repairid)) &&
+			$this->execute('DELETE FROM repairequipment WHERE repairid=?', array($data->repairid)) &&
 			$this->execute('DELETE FROM repairs WHERE repairid=?', array($data->repairid));
 	}
 
-	public function equipment_list($args)
+	public function repairequipment_list($args)
 	{
 		$data = new ArrayList($args);
 
@@ -308,7 +308,7 @@ class PDODataSource implements IDataSource
 
 		return static::tablecopy($this->select
 		(
-			'SELECT * FROM equipment WHERE repairid = ?',
+			'SELECT e.equipmentid AS equipmentid, e.equipmentname AS equipmentname, e.assetno AS assetno, re.description AS description FROM equipment AS e, repairequipment AS re WHERE re.repairid = ? AND e.equipmentid = re.equipmentid',
 			array($data->repairid)
 		), "equipmentid");
 	}
@@ -316,20 +316,34 @@ class PDODataSource implements IDataSource
 	{
 		$data = new ArrayList($args);
 
-		if (!$data->containsKey("repairid"))
-		{
-			throw new InvalidArgumentException("repairid not supplied");
-		}
-		if (!$data->containsKey("equipmentname", "assetno", "description"))
+		if (!$data->containsKey("equipmentname", "assetno"))
 		{
 			throw new InvalidArgumentException("not enough columns supplied");
 		}
 
 		return $this->insert
 		(
-			'INSERT INTO equipment (repairid, equipmentname, assetno, description) VALUES (?, ?, ?, ?)',
-			array($data->repairid, $data->equipmentname, $data->assetno, $data->description)
+			'INSERT INTO equipment (equipmentname, assetno) VALUES (?, ?)',
+			array($data->equipmentname, $data->assetno)
 		);
+	}
+	public function repairequipment_new($args)
+	{
+		$data = new ArrayList($args);
+
+		if (!$data->containsKey("description"))
+		{
+			throw new InvalidArgumentException("not enough columns supplied");
+		}
+
+		$equipmentid = $this->equipment_new($args);
+		$this->insert
+		(
+			'INSERT INTO repairequipment (repairid, equipmentid, description) VALUES (?, ?, ?)',
+			array($data->repairid, $equipmentid, $data->description)
+		);
+
+		return $equipmentid;
 	}
 	public function equipment_get($args)
 	{
@@ -338,10 +352,7 @@ class PDODataSource implements IDataSource
 		if (!$data->containsKey("equipmentid"))
 		{
 			throw new InvalidArgumentException("equipmentid not supplied");
-			return false;
 		}
-
-		$out = array();
 
 		foreach($this->select
 		(
@@ -353,6 +364,36 @@ class PDODataSource implements IDataSource
 		}
 		return false;
 	}
+	public function repairequipment_get($args)
+	{
+		$data = new ArrayList($args);
+
+		if (!$data->containsKey("equipmentid", "repairid"))
+		{
+			throw new InvalidArgumentException("not enough columns supplied");
+		}
+
+		foreach($this->select
+		(
+			'SELECT e.equipmentid AS equipmentid, e.equipmentname AS equipmentname, e.assetno AS assetno, re.description AS description '.
+			'FROM equipment AS e, repairequipment AS re '.
+			'WHERE re.equipmentid = ? AND e.equipmentid = e.equipmentid AND re.repairid = ?',
+			array($data->equipmentid, $data->repairid)
+		) as $row)
+		{
+			return static::rowcopy($row);
+		}
+		return false;
+	}
+	public function repairequipment_delete($args)
+	{
+		$data = new ArrayList($args);
+		$rv = $this->execute('DELETE FROM repairequipment WHERE repairid=? AND equipmentid=?', array($data->repairid, $data->equipmentid)) &&
+			$this->execute('DELETE FROM equipment WHERE equipmentid=?', array($data->equipmentid));
+		if (!$rv)
+			throw new Exception($rv);
+		return $rv;
+	}
 	public function equipment_delete($args)
 	{
 		$data = new ArrayList($args);
@@ -360,6 +401,26 @@ class PDODataSource implements IDataSource
 		if (!$rv)
 			throw new Exception($rv);
 		return $rv;
+	}
+	public function repairequipment_modify($args)
+	{
+		$data = new ArrayList($args);
+
+		if (!$data->containsKey("repairid"))
+		{
+			throw new InvalidArgumentException("repairid not supplied");
+		}
+		if (!$data->containsKey("description"))
+		{
+			throw new InvalidArgumentException("not enough columns supplied");
+		}
+
+		return $this->equipment_modify($args) &&
+		$this->execute
+		(
+			'UPDATE repairequipment SET description=? WHERE repairid=? AND equipmentid=?',
+			array($data->description, $data->repairid, $data->equipmentid)
+		);
 	}
 	public function equipment_modify($args)
 	{
@@ -370,15 +431,15 @@ class PDODataSource implements IDataSource
 		{
 			throw new InvalidArgumentException("equipmentid not supplied");
 		}
-		if (!$data->containsKey("equipmentname", "assetno", "description"))
+		if (!$data->containsKey("equipmentname", "assetno"))
 		{
 			throw new InvalidArgumentException("not enough columns supplied");
 		}
 
 		return $this->execute
 		(
-			'UPDATE equipment SET equipmentname=?, assetno=?, description=? WHERE equipmentid = ?',
-			array($data->equipmentname, $data->assetno, $data->description, $data->equipmentid)
+			'UPDATE equipment SET equipmentname=?, assetno=? WHERE equipmentid=?',
+			array($data->equipmentname, $data->assetno, $data->equipmentid)
 		);
 	}
 }

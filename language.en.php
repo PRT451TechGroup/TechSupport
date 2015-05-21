@@ -55,7 +55,8 @@ Language::addString(array
 	"date_due" => "Date",
 	"time_due" => "Time",
 	"jobname" => "Job Name",
-	"complainer" => "Complainer"
+	"complainer" => "Complainer",
+	"precinct" => "Precinct"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",

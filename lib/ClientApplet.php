@@ -27,11 +27,10 @@ class ClientApplet
 		}
 		else
 		{
-			Bean::path($path->toString());
-			Bean::back("/");
-			Document::body(function()
+			$_PAGE = array("path" => $path->toString(), "back" => "/");
+			Document::body(function() use($_PAGE)
 			{
-				Document::page("404");
+				Document::page("404", $_PAGE);
 			});
 			Document::build();
 		}

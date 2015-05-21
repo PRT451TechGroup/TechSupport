@@ -1,8 +1,8 @@
-<div data-role="page" data-back="<?=APPDIR.Bean::back()?>">
+<div data-role="page" data-back="<?=APPDIR.$back?>">
 	<div data-role="header">
 		<h1><?=Language::register()?></h1>
 		<?=Widgets::logout()?>
-		<?=Widgets::back()?>
+		<?=Widgets::back($back)?>
 	</div>
 	<div data-role="content">
 		<form action="<?=APPDIR?>/user/register/submit" method="POST">

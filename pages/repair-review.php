@@ -1,15 +1,15 @@
-<div data-role="page" data-back="<?=APPDIR.Bean::back()?>">
+<div data-role="page" data-back="<?=APPDIR.$back?>">
 	<div data-role="header">
 		<h1><?=Language::repair_review()?></h1>
 		<?=Widgets::logout()?>
-		<?=Widgets::back()?>
+		<?=Widgets::back($back)?>
 	</div>
 	<div data-role="content">
 		<ul data-role="listview">
 			<?php for($i=0;$i<5;$i++): ?>
 			<?php
 			$text = Language::completion(array("completion" => $i));
-			$bc = Bean::completion();
+			$bc = $completion;
 			$theme = "cdefg";
 			$theme = $theme{$i};
 			if (isset($bc[$i]))

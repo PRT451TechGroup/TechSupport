@@ -1,4 +1,4 @@
-<div data-role="page" data-back="<?=APPDIR.Bean::back()?>">
+<div data-role="page" data-back="<?=APPDIR.$back?>">
 	<div data-role="header">
 		<h1><?=Language::login()?></h1>
 	</div>

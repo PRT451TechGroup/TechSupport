@@ -71,12 +71,12 @@ class RepairApplet
 			
 		), $matchvars);
 
-		
+		$_PAGE = array();
 		switch($match)
 		{
 			case "repair":
-				Bean::back("/");
-				Document::body(function() { Document::page("repair"); });
+				$_PAGE["back"] = "/";
+				Document::body(function() use($_PAGE) { Document::page("repair", $_PAGE); });
 				Document::build();
 				break;
 			case "repair-delete":
@@ -86,14 +86,13 @@ class RepairApplet
 				Document::redirect(APPDIR."/repair/review/$completion");
 				break;
 			case "review":
-				Bean::back("/repair");
-				Bean::completion($datasource->repair_completion());
-				//throw new Exception(print_r(Bean::completion(), true));
-				Document::body(function() { Document::page("repair-review"); });
+				$_PAGE["back"] = "/repair";
+				$_PAGE["completion"] = $datasource->repair_completion();
+				Document::body(function() use($_PAGE) { Document::page("repair-review", $_PAGE); });
 				Document::build();
 				break;
 			case "review-repair":
-				if ($args->containsKey("name", "complainer", "building", "floor", "room", "year", "month", "day", "hour", "minute", "priority", "completion"))
+				if ($args->containsKey("name", "complainer", "precinct", "building", "floor", "room", "year", "month", "day", "hour", "minute", "priority", "completion"))
 				{
 					if (!is_numeric($args->building))
 						throw new Exception("building is not numeric");
@@ -105,21 +104,19 @@ class RepairApplet
 						throw new Exception("priority is not numeric");
 					if (!is_numeric($args->completion))
 						throw new Exception("completion is not numeric");
-
 					$rv = $datasource->repair_modify(array
 					(
 						"name" => $args->name,
 						"complainer" => $args->complainer,
 						"repairid" => $matchvars["repairid"],
-						"location" => sprintf("%s.%s.%s", $args->building, $args->floor, $args->room),
-						"duedate" => sprintf("%s-%s-%s %s:%s:00", $args->year, $args->month, $args->day, $args->hour, $args->minute),
+						"location" => (string)(new FSLocation($args->precinct, $args->building, $args->floor, $args->room)),
+						"duedate" => (string)(new FSDateTime($args->year, $args->month, $args->day, $args->hour, $args->minute)),
 						"completion" => $args->completion,
 						"priority" => $args->priority
 					));
 					
 					$redirect = true;
 
-					//throw new Exception(sprintf("%s.%s.%s", $args->building, $args->floor, $args->room));
 				}
 
 				$repairid = $matchvars["repairid"];
@@ -132,20 +129,20 @@ class RepairApplet
 					break;
 				}
 				
-				Bean::repairid($repairid);
-				Bean::completion($completion);
-				Bean::repair($repair);
+				$_PAGE["repairid"] = $repairid;
+				$_PAGE["completion"] = $completion;
+				$_PAGE["repair"] = $repair;
 				
-				Bean::back("/repair/review/$completion");
-				Bean::repairusername($datasource->user_name(array("userid" => $repair->userid)));
-				Document::body(function() { Document::page("repair-edit"); });
+				$_PAGE["back"] = "/repair/review/$completion";
+				$_PAGE["repairusername"] = $datasource->user_name(array("userid" => $repair->userid));
+				Document::body(function() use($_PAGE) { Document::page("repair-edit", $_PAGE); });
 				Document::build();
 				break;
 			case "create":
 				Document::redirect(APPDIR."/repair/create/".($datasource->repair_new(array("userid" => Session::userid()))));
 				break;
 			case "create-show":
-				if ($args->containsKey("name", "complainer", "building", "floor", "room", "year", "month", "day", "hour", "minute", "priority"))
+				if ($args->containsKey("name", "complainer", "precinct", "building", "floor", "room", "year", "month", "day", "hour", "minute", "priority"))
 				{
 					if (!is_numeric($args->building))
 						throw new Exception("building is not numeric");
@@ -161,8 +158,8 @@ class RepairApplet
 						"name" => $args->name,
 						"complainer" => $args->complainer,
 						"repairid" => $matchvars["repairid"],
-						"location" => sprintf("%s.%s.%s", $args->building, $args->floor, $args->room),
-						"duedate" => sprintf("%s-%s-%s %s:%s:00", $args->year, $args->month, $args->day, $args->hour, $args->minute),
+						"location" => (string)(new FSLocation($args->precinct, $args->building, $args->floor, $args->room)),
+						"duedate" => (string)(new FSDateTime($args->year, $args->month, $args->day, $args->hour, $args->minute)),
 						"completion" => 0,
 						"priority" => $args->priority
 					));
@@ -170,14 +167,13 @@ class RepairApplet
 					Document::redirect(APPDIR."/repair");
 					break;
 
-					//throw new Exception(sprintf("%s.%s.%s", $args->building, $args->floor, $args->room));
 				}
 				
-				Bean::repairid($matchvars["repairid"]);
-				Bean::repair(new ArrayList($datasource->repair_get(array("repairid" => $matchvars["repairid"]))));
-				Bean::back("/repair");
-				Bean::repairusername($datasource->user_name(array("userid" => Bean::repair()->userid)));
-				Document::body(function() { Document::page("repair-create"); });
+				$_PAGE["repairid"] = $matchvars["repairid"];
+				$_PAGE["repair"] = new ArrayList($datasource->repair_get(array("repairid" => $matchvars["repairid"])));
+				$_PAGE["back"] = "/repair";
+				$_PAGE["repairusername"] = $datasource->user_name(array("userid" => $_PAGE["repair"]->userid));
+				Document::body(function() use($_PAGE) { Document::page("repair-create", $_PAGE); });
 				Document::build();
 				break;
 			case "review-equipment": $completion = $matchvars["completion"];
@@ -189,7 +185,7 @@ class RepairApplet
 				{
 					if ($args->__action == "equipment-create" && $args->containsKey("equipmentname", "assetno", "description"))
 					{
-						$datasource->equipment_new(array
+						$datasource->repairequipment_new(array
 						(
 							"repairid" => $repairid,
 							"equipmentname" => $args->equipmentname,
@@ -199,8 +195,9 @@ class RepairApplet
 					}
 					elseif ($args->__action == "equipment-edit" && $args->containsKey("equipmentid", "equipmentname", "assetno", "description"))
 					{
-						$datasource->equipment_modify(array
+						$datasource->repairequipment_modify(array
 						(
+							"repairid" => $repairid,
 							"equipmentid" => $args->equipmentid,
 							"equipmentname" => $args->equipmentname,
 							"assetno" => $args->assetno,
@@ -210,25 +207,19 @@ class RepairApplet
 				}
 
 				
-				Bean::repairid($repairid);
-				Bean::equipment($datasource->equipment_list(array("repairid" => $repairid)));
-				if (isset($completion))
-					Bean::back("/repair/review/$completion/$repairid");
-				else
-					Bean::back("/repair/create/$repairid");
+				$_PAGE["repairid"] = $repairid;
+				$_PAGE["equipment"] = $datasource->repairequipment_list(array("repairid" => $repairid));
+				$_PAGE["back"] = isset($completion) ? "/repair/review/$completion/$repairid" : "/repair/create/$repairid";
 				
-				Document::body(function() { Document::page("equipment"); });
+				Document::body(function() use($_PAGE) { Document::page("equipment", $_PAGE); });
 				Document::build();
 				break;
 			case "review-equipment-create": $completion = $matchvars["completion"];
 			case "create-equipment-create":
 				$repairid = $matchvars["repairid"];
+				$_PAGE["back"] = isset($completion) ? "/repair/review/$completion/$repairid/equipment" : "/repair/create/$repairid/equipment";
 
-				if (isset($completion))
-					Bean::back("/repair/review/$completion/$repairid/equipment");
-				else
-					Bean::back("/repair/create/$repairid/equipment");
-				Document::body(function() { Document::page("equipment-create"); });
+				Document::body(function() use($_PAGE) { Document::page("equipment-create", $_PAGE); });
 				Document::build();
 				break;
 			case "review-equipment-edit": $completion = $matchvars["completion"];
@@ -236,13 +227,11 @@ class RepairApplet
 				$repairid = $matchvars["repairid"];
 				$equipmentid = $matchvars["equipmentid"];
 				
-				Bean::equipmentid($equipmentid);
-				Bean::equipment(new ArrayList($datasource->equipment_get(array("equipmentid" => $equipmentid))));
-				if (isset($completion))
-					Bean::back("/repair/review/$completion/$repairid/equipment");
-				else
-					Bean::back("/repair/create/$repairid/equipment");
-				Document::body(function() { Document::page("equipment-edit"); });
+				$_PAGE["equipmentid"] = $equipmentid;
+				$_PAGE["equipment"] = new ArrayList($datasource->repairequipment_get(array("equipmentid" => $equipmentid, "repairid" => $repairid)));
+				$_PAGE["back"] = isset($completion) ? "/repair/review/$completion/$repairid/equipment" : "/repair/create/$repairid/equipment";
+				
+				Document::body(function() use($_PAGE) { Document::page("equipment-edit", $_PAGE); });
 				Document::build();
 				break;
 			case "review-equipment-delete": $completion = $matchvars["completion"];
@@ -250,7 +239,7 @@ class RepairApplet
 				$repairid = $matchvars["repairid"];
 				$equipmentid = $matchvars["equipmentid"];
 
-				$datasource->equipment_delete(array("equipmentid" => $equipmentid));
+				$datasource->repairequipment_delete(array("equipmentid" => $equipmentid, "repairid" => $repairid));
 
 				if (isset($completion))
 					Document::redirect(APPDIR."/repair/review/$completion/$repairid/equipment");
@@ -260,10 +249,10 @@ class RepairApplet
 			case "review-cat":
 				$completion = $matchvars["completion"];
 
-				Bean::completion($completion);
-				Bean::repairs($datasource->repair_list(array("completion" => $completion)));
-				Bean::back("/repair/review");
-				Document::body(function() { Document::page("repair-review-cat"); });
+				$_PAGE["completion"] = $completion;
+				$_PAGE["repairs"] = $datasource->repair_list(array("completion" => $completion));
+				$_PAGE["back"] = "/repair/review";
+				Document::body(function() use($_PAGE) { Document::page("repair-review-cat", $_PAGE); });
 				Document::build();
 				break;
 			case "default":
