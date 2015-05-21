@@ -4,6 +4,10 @@
 		<?=Widgets::logout()?>
 		<?=Widgets::back($back)?>
 	</div>
+	<?php
+	$fsl = new FSLocation($repair->location);
+	$fsdt = new FSDateTime($repair->duedate);
+	?>
 	<div data-role="content">
 		<form action="<?=APPDIR?>/repair/create/<?=$repairid?>" method="POST" data-ajax="false">
 			<input type="hidden" name="__method" value="repair-create" />
@@ -19,15 +23,15 @@
 					<?php Widgets::field_complainer(array("complainer" => $repair->complainer)); ?>
 				</li>
 				<li class="ui-field-contain">
-					<?php Widgets::fieldset_location((new FSLocation($repair->location))->to_array()); ?>
+					<?php Widgets::fieldset_location($fsl->to_array()); ?>
 				</li>
 				<li class="ui-field-contain">
 					<?php Widgets::fieldset_date(array("prefix" => "", "label" => Language::date_due()) +
-						(new FSDateTime($repair->duedate))->to_array()); ?>
+						$fsdt->to_array()); ?>
 				</li>
 				<li class="ui-field-contain">
 					<?php Widgets::fieldset_time(array("prefix" => "", "label" => Language::time_due()) +
-						(new FSDateTime($repair->duedate))->to_array()); ?>
+						$fsdt->to_array()); ?>
 				</li>
 				<li class="ui-field-contain">
 					<?php Widgets::field_priority(array("priority" => $repair->priority)); ?>
