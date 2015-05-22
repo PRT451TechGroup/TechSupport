@@ -98,6 +98,10 @@ class Path
 	{
 		return $this->pos < count($this->spl);
 	}
+	public function remainder()
+	{
+		return implode("/", array_slice($this->spl, $this->pos));
+	}
 	public function toString()
 	{
 		$out = "";

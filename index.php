@@ -2,7 +2,7 @@
 require("define.inc.php");
 spl_autoload_register(function($class)
 {
-	require LIBDIR."/".$class.".php";
+	require LIBDIR."/".str_replace("\\", "/", $class).".php";
 });
 
 call_user_func(function()

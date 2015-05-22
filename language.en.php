@@ -56,7 +56,14 @@ Language::addString(array
 	"time_due" => "Time",
 	"jobname" => "Job Name",
 	"complainer" => "Complainer",
-	"precinct" => "Precinct"
+	"precinct" => "Precinct",
+	"loan_review" => "Review Loans",
+	"loan_create" => "Create Loan",
+	"loan_edit" => "Edit Loan",
+	"loanername" => "Loaner Name",
+	"staffname" => "Staff Name",
+	"loandate" => "Loan Date",
+	"returndate" => "Return Date"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",

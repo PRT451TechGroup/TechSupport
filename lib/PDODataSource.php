@@ -25,7 +25,7 @@ class PDODataSource implements IDataSource
 		$this->pdo_password = $password;
 		$this->pdo_options = $options;
 	}
-	private function open_connection()
+	public function open_connection()
 	{
 		return new PDO($this->pdo_dsn, $this->pdo_username, $this->pdo_password, $this->pdo_options);
 	}
