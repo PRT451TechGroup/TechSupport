@@ -8,6 +8,7 @@ class LoanApplet
 	}
 	public function start()
 	{
+		// reject guests
 		if (!Session::verify())
 		{
 			Document::redirect(APPDIR."/");
@@ -15,20 +16,25 @@ class LoanApplet
 		}
 		
 		$path = $this->app->path()->remainder();
+
+		// http post vars
 		$args = $this->app->arguments();
 		$datasource = $this->app->datasource();
 
 		$appletRoot = "/loan";
 
+
 		$_PAGE = array("APPLET_ROOT" => APPDIR.$appletRoot);
 		$loans = new \Data\Table\Loans($datasource->open_connection());
 
+		// Applet index page
 		if (strlen($path) === 0)
 		{
 			$_PAGE["back"] = "/";
 			Document::body(function() use($_PAGE) { Document::page("loan/index", $_PAGE); });
 			Document::build();
 		}
+		// Review Loans
 		elseif ($path === "review")
 		{
 			$_PAGE += array
@@ -39,11 +45,13 @@ class LoanApplet
 			Document::body(function() use($_PAGE) { Document::page("loan/review", $_PAGE); });
 			Document::build();
 		}
+		// Create loan and redirect to editor
 		else if ($path === "create")
 		{
 			$loanid = $loans->insertLoan(Session::userid());
 			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid");
 		}
+		// Delete loan
 		elseif (preg_match('#^(?P<loanid>\d+)/delete$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
@@ -51,6 +59,7 @@ class LoanApplet
 			$loans->deleteLoanById($loanid);
 			Document::redirect($_PAGE["APPLET_ROOT"]."/review/$cat");
 		}
+		// Edit or view loan
 		elseif (preg_match('#^(?P<loanid>\d+)$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
@@ -82,6 +91,7 @@ class LoanApplet
 				Document::build();
 			}
 		}
+		// Edit or view loan equipment
 		elseif (preg_match('#^(?P<loanid>\d+)/equipment$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
@@ -111,6 +121,7 @@ class LoanApplet
 			Document::body(function() use($_PAGE) { Document::page("loan/equipment", $_PAGE); });
 			Document::build();
 		}
+		// Add equipment
 		elseif (preg_match('#^(?P<loanid>\d+)/equipment/create$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
@@ -122,6 +133,7 @@ class LoanApplet
 			Document::body(function() use($_PAGE) { Document::page("loan/equipment/create", $_PAGE); });
 			Document::build();
 		}
+		// Edit or view equipment
 		elseif (preg_match('#^(?P<loanid>\d+)/equipment/(?P<equipmentid>\d+)$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
@@ -136,6 +148,7 @@ class LoanApplet
 			Document::body(function() use($_PAGE) { Document::page("loan/equipment/edit", $_PAGE); });
 			Document::build();
 		}
+		// Delete equipment
 		elseif (preg_match('#^(?P<loanid>\d+)/equipment/(?P<equipmentid>\d+)/delete$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
@@ -145,6 +158,7 @@ class LoanApplet
 
 			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid/equipment");
 		}
+		// Review loans by category
 		elseif (preg_match('#^review/(?P<category>\d+)$#', $path, $matches))
 		{
 			$category = $matches["category"];
@@ -158,6 +172,7 @@ class LoanApplet
 			Document::body(function() use($_PAGE) { Document::page("loan/review-cat", $_PAGE); });
 			Document::build();
 		}
+		// Redirect invalid pages to index
 		else
 		{
 			Document::redirect($_PAGE["APPLET_ROOT"]);

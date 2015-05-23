@@ -43,11 +43,6 @@ class UserApplet
 						Session::userid($uid);
 						Session::username($args->username);
 						Document::redirect(APPDIR.'/');
-						/*Bean::username($args->username);
-						Bean::back("/");
-						Document::body(function() { Document::page("login-success"); });
-						Bean::back("/user");
-						Document::build();*/
 					}
 					else
 					{
@@ -78,11 +73,11 @@ class UserApplet
 					$err = true;
 
 					if (strlen($args->username) == 0)
-						Bean::error(Language::username_blank());
+						$_PAGE["error"] = Language::username_blank();
 					else if ($args->password != $args->vpassword)
-						Bean::error(Language::password_mismatch());
+						$_PAGE["error"] = (Language::password_mismatch());
 					else if (strlen($args->password) == 0)
-						Bean::error(Language::password_blank());
+						$_PAGE["error"] = (Language::password_blank());
 					else
 						$err = false;
 

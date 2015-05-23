@@ -8,6 +8,8 @@ spl_autoload_register(function($class)
 call_user_func(function()
 {
 	$app = null;
+
+	// buffer output to override in case of exception
 	ob_start(null, 0, PHP_OUTPUT_HANDLER_STDFLAGS);
 	try
 	{
@@ -37,6 +39,7 @@ call_user_func(function()
 			$GLOBALS["__APPLICATION"] = $app;
 			require(PAGEDIR."/exception.php");
 		}
+		// fallback in case fancy exception message fails
 		catch(Exception $f)
 		{
 			ob_clean();

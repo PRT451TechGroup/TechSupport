@@ -1,4 +1,5 @@
 <?php
+// spaghetti code needs to be cleaned up to same standard as LoanApplet
 class RepairApplet
 {
 	private $app;
