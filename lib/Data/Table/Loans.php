@@ -14,12 +14,28 @@ class Loans
 		if ($stmt->execute(array($id)))
 		{
 			$ct = $stmt->fetch(\PDO::FETCH_NUM);
+			//throw new \Exception($ct[0]);
+			return $this->categoryOf($ct[0]);
+		}
+	}
+	public function deleteLoanById($id)
+	{
+		return $this->conn->prepare("DELETE FROM loanequipment WHERE loanid=?")->execute(array($id)) &&
+			$this->conn->prepare("DELETE FROM loans WHERE loanid=?")->execute(array($id));
+	}
+	public function categoryOf($daydiff)
+	{
+		$daydiff = intval($daydiff);
+		foreach($this->dueCategories as $categoryIndex => $categoryExpression)
+		{
 			if (preg_match('/^(?P<operator>\<|\>|\<=|\>=|=|<>) (?P<value>-?\d+)$/', $categoryExpression, $matches))
 			{
 				$value = intval($matches["value"]);
+				$testFunc = function($daydiff, $operator, $value)
 				{
 					switch($operator)
 					{
+						case "<": return $daydiff < $value;
 						case "<=": return $daydiff <= $value;
 						case ">": return $daydiff > $value;
 						case ">=": return $daydiff >= $value;
@@ -27,8 +43,10 @@ class Loans
 						case "<>": return $daydiff != $value;
 					}
 				};
+				if ($testFunc($daydiff, $matches["operator"], $value))
 					return $categoryIndex;
 			}
+			elseif (preg_match('/^BETWEEN (?P<min>-?\d+) AND (?P<max>-?\d+)$/', $categoryExpression, $matches))
 			{
 				list($min, $max) = array(intval($matches["min"]), intval($matches["max"]));
 				if ($min <= $daydiff && $daydiff <= $max)
