@@ -44,6 +44,13 @@ class LoanApplet
 			$loanid = $loans->insertLoan(Session::userid());
 			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid");
 		}
+		elseif (preg_match('#^(?P<loanid>\d+)/delete$#', $path, $matches))
+		{
+			$loanid = $matches["loanid"];
+			$cat = $loans->getCategoryById($loanid);
+			$loans->deleteLoanById($loanid);
+			Document::redirect($_PAGE["APPLET_ROOT"]."/review/$cat");
+		}
 		elseif (preg_match('#^(?P<loanid>\d+)$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
@@ -57,21 +64,23 @@ class LoanApplet
 				$loan["loandate"] = (string)(new FSDateTime($args["loan_year"], $args["loan_month"], $args["loan_day"]));
 				$loan["returndate"] = (string)(new FSDateTime($args["return_year"], $args["return_month"], $args["return_day"]));
 				$loan["completion"] = 0;
-
 				$loans->updateLoan($loanid, $loan);
+				$cat = $loans->getCategoryById($loanid);
+				Document::redirect($_PAGE["APPLET_ROOT"]."/review/$cat");
 			}
-
-			$loan = $loans->selectLoanById($loanid);
-			$_PAGE += array
-			(
-				"back" => $appletRoot."/review/".$loans->categoryOf($loan['daydiff']),
-				"loan" => $loan,
-				"loanid" => $loanid,
-				"loanowner" => $datasource->user_name(array("userid" => $loan["userid"]))
-			);
-
-			Document::body(function() use($_PAGE) { Document::page("loan/edit", $_PAGE); });
-			Document::build();
+			else
+			{
+				$loan = $loans->selectLoanById($loanid);
+				$_PAGE += array
+				(
+					"back" => $appletRoot."/review/".$loans->categoryOf($loan['daydiff']),
+					"loan" => $loan,
+					"loanid" => $loanid,
+					"loanowner" => $datasource->user_name(array("userid" => $loan["userid"]))
+				);
+				Document::body(function() use($_PAGE) { Document::page("loan/edit", $_PAGE); });
+				Document::build();
+			}
 		}
 		elseif (preg_match('#^(?P<loanid>\d+)/equipment$#', $path, $matches))
 		{
