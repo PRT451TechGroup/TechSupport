@@ -83,6 +83,11 @@ Language::addCallback("completion", function($data)
 	$a = array("Not Done", "Partially Done", "Half Done", "Almost Done", "Done");
 	return $a[$data["completion"]];
 });
+Language::addCallback("duecat", function($data)
+{
+	$a = array("Overdue", "Less than a day", "Less than a week", "Less than a month", "At least a month");
+	return $a[$data["duecat"]];
+});
 Language::addCallback("monthat", function($data)
 {
 	$a = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");

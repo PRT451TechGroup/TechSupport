@@ -31,16 +31,20 @@ class LoanApplet
 		}
 		elseif ($path === "review")
 		{
-			$_PAGE["back"] = $appletRoot;
+			$_PAGE += array
+			(
+				"back" => $appletRoot,
+				"categories" => $loans->countLoansByCategory()
+			);
 			Document::body(function() use($_PAGE) { Document::page("loan/review", $_PAGE); });
 			Document::build();
 		}
 		else if ($path === "create")
 		{
 			$loanid = $loans->insertLoan(Session::userid());
-			Document::redirect($_PAGE["APPLET_ROOT"]."/create/$loanid");
+			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid");
 		}
-		elseif (preg_match('#^create/(?P<loanid>\d+)$#', $path, $matches))
+		elseif (preg_match('#^(?P<loanid>\d+)$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
 			if (isset($args["__method"]) && $args["__method"] === "update")
@@ -60,40 +64,90 @@ class LoanApplet
 			$loan = $loans->selectLoanById($loanid);
 			$_PAGE += array
 			(
-				"back" => $appletRoot,
+				"back" => $appletRoot."/review/".$loans->categoryOf($loan['daydiff']),
 				"loan" => $loan,
-				"loanid" => $loanid
+				"loanid" => $loanid,
+				"loanowner" => $datasource->user_name(array("userid" => $loan["userid"]))
 			);
 
-			Document::body(function() use($_PAGE) { Document::page("loan/create", $_PAGE); });
+			Document::body(function() use($_PAGE) { Document::page("loan/edit", $_PAGE); });
 			Document::build();
 		}
-		elseif (preg_match('#^create/(?P<loanid>\d+)/equipment$#', $path, $matches))
+		elseif (preg_match('#^(?P<loanid>\d+)/equipment$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
+
+			if (isset($args["__method"]))
+			{
+				switch($args["__method"])
+				{
+					case "insert":
+						$equipment = array("equipmentname" => $args["equipmentname"], "assetno" => $args["assetno"]);
+						$loans->insertEquipment($loanid, $equipment);
+						break;
+					case "update":
+						$equipment = array("equipmentname" => $args["equipmentname"], "assetno" => $args["assetno"]);
+						$equipmentid = $args["equipmentid"];
+						$loans->updateEquipment($equipmentid, $equipment);
+						break;
+				}
+			}
+			
 			$_PAGE += array
 			(
-				"back" => "$appletRoot/create/$loanid",
+				"back" => "$appletRoot/$loanid",
 				"equipment" => $loans->selectEquipmentByLoanId($loanid)
 			);
 
 			Document::body(function() use($_PAGE) { Document::page("loan/equipment", $_PAGE); });
 			Document::build();
 		}
-		elseif (preg_match('#^create/(?P<loanid>\d+)/equipment/create$#', $path, $matches))
+		elseif (preg_match('#^(?P<loanid>\d+)/equipment/create$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
 			$_PAGE += array
 			(
-				"back" => "$appletRoot/create/$loanid/equipment"
+				"back" => "$appletRoot/$loanid/equipment"
 			);
 
 			Document::body(function() use($_PAGE) { Document::page("loan/equipment/create", $_PAGE); });
 			Document::build();
 		}
-		elseif (preg_match('#^review/(?P<condition>\d+)$#', $path, $matches))
+		elseif (preg_match('#^(?P<loanid>\d+)/equipment/(?P<equipmentid>\d+)$#', $path, $matches))
 		{
-			
+			$loanid = $matches["loanid"];
+			$equipmentid = $matches["equipmentid"];
+			$_PAGE += array
+			(
+				"back" => "$appletRoot/$loanid/equipment",
+				"equipmentid" => $equipmentid,
+				"equipment" => $loans->selectEquipmentById($loanid, $equipmentid)
+			);
+
+			Document::body(function() use($_PAGE) { Document::page("loan/equipment/edit", $_PAGE); });
+			Document::build();
+		}
+		elseif (preg_match('#^(?P<loanid>\d+)/equipment/(?P<equipmentid>\d+)/delete$#', $path, $matches))
+		{
+			$loanid = $matches["loanid"];
+			$equipmentid = $matches["equipmentid"];
+
+			$loans->deleteEquipmentById($loanid, $equipmentid);
+
+			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid/equipment");
+		}
+		elseif (preg_match('#^review/(?P<category>\d+)$#', $path, $matches))
+		{
+			$category = $matches["category"];
+			$_PAGE += array
+			(
+				"back" => "$appletRoot/review",
+				"category" => $category,
+				"loans" => $loans->selectLoansByCategory($category)
+			);
+
+			Document::body(function() use($_PAGE) { Document::page("loan/review-cat", $_PAGE); });
+			Document::build();
 		}
 		else
 		{
