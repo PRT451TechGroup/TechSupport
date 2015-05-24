@@ -69,7 +69,19 @@ class Loans
 	public function selectLoansByCategory($cat)
 	{
 		$dcc = $this->dueCategories[$cat];
-		$stmt = $this->conn->prepare("SELECT * FROM loans WHERE completion >= 0 AND DATEDIFF(returndate, CURDATE()) $dcc");
+		$sql =  " SELECT loans.*, COUNT(loanequipment.loanid) AS equipmentcount".
+			" FROM loans".
+			" LEFT OUTER JOIN loanequipment".
+			" ON loanequipment.loanid=loans.loanid".
+			" WHERE DATEDIFF(loans.returndate, CURDATE()) $dcc".
+			" GROUP BY loans.loanid ".
+			" ORDER BY loans.returndate ASC ";
+		$stmt = $this->conn->prepare($sql);
+
+		if ($stmt->execute())
+			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+		/*
+		$stmt = $this->conn->prepare("SELECT * FROM loans WHERE completion >= 0 AND DATEDIFF(returndate, CURDATE()) $dcc ORDER BY returndate, loandate");
 		if ($stmt->execute())
 		{
 			$rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -101,15 +113,23 @@ class Loans
 			}
 
 			return $rows;
-		}
+		}*/
 	}
 	public function selectLoanById($id)
 	{
-		$stmt = $this->conn->prepare("SELECT *, DATEDIFF(returndate, CURDATE()) AS daydiff FROM loans WHERE loanid = ?");
+		/*$stmt = $this->conn->prepare("SELECT *, DATEDIFF(returndate, CURDATE()) AS daydiff FROM loans WHERE loanid = ?");
 		if ($stmt->execute(array($id)))
-			return $stmt->fetch(\PDO::FETCH_ASSOC) + $this->selectEquipmentCountByLoanId($id);
+			return $stmt->fetch(\PDO::FETCH_ASSOC) + $this->selectEquipmentCountByLoanId($id);*/
+		$stmt = $this->conn->prepare(
+			" SELECT loans.*, DATEDIFF(loans.returndate, CURDATE()) AS daydiff, COUNT(loanequipment.loanid) AS equipmentcount".
+			" FROM loans".
+			" LEFT OUTER JOIN loanequipment".
+			" ON loanequipment.loanid=loans.loanid".
+			" WHERE loans.loanid = ?");
+		if ($stmt->execute(array($id)))
+			return $stmt->fetch(\PDO::FETCH_ASSOC);
 	}
-	public function selectLoans()
+	public function selectLoans($limit = 1000)
 	{
 		$stmt = $this->conn->prepare("SELECT * FROM loans WHERE completion >= 0");
 		if ($stmt->execute(array()))
@@ -119,7 +139,7 @@ class Loans
 	{
 		$stmt = $this->conn->prepare("SELECT COUNT(equipmentid) AS equipmentcount FROM loanequipment WHERE loanid=?");
 		if ($stmt->execute(array($id)))
-			return $stmt->fetch(\PDO::FETCH_ASSOC);
+			return $stmt->fetch(\PDO::FETCH_ASSOC) ?: array("equipmentcount" => "0");
 		
 	}
 	public function selectEquipmentByLoanId($id)
@@ -132,14 +152,14 @@ class Loans
 		if ($stmt->execute(array($id)))
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 	}
-	public function selectEquipmentById($loanid, $equipmentid)
+	public function selectEquipmentById($equipmentid)
 	{
 		$stmt = $this->conn->prepare(
 			"SELECT le.loanid AS loanid, e.equipmentid AS equipmentid, e.equipmentname AS equipmentname, e.assetno AS assetno ".
 			"FROM loanequipment AS le, equipment AS e ".
-			"WHERE le.loanid=? AND le.equipmentid=? AND le.equipmentid=e.equipmentid");
+			"WHERE le.equipmentid=? AND le.equipmentid=e.equipmentid");
 
-		if ($stmt->execute(array($loanid, $equipmentid)))
+		if ($stmt->execute(array($equipmentid)))
 			return $stmt->fetch(\PDO::FETCH_ASSOC);
 	}
 	public function insertLoan($userid)
@@ -157,9 +177,9 @@ class Loans
 
 		return $stmt->execute(array($equipment["equipmentname"], $equipment["assetno"], $equipmentid));
 	}
-	public function deleteEquipmentById($loanid, $equipmentid)
+	public function deleteEquipmentById($equipmentid)
 	{
-		return $this->conn->prepare("DELETE FROM loanequipment WHERE loanid=? AND equipmentid=?")->execute(array($loanid, $equipmentid)) &&
+		return $this->conn->prepare("DELETE FROM loanequipment WHERE equipmentid=?")->execute(array($equipmentid)) &&
 			$this->conn->prepare("DELETE FROM equipment WHERE equipmentid=?")->execute(array($equipmentid));
 	}
 	public function insertEquipment($loanid, $equipment)
@@ -175,9 +195,9 @@ class Loans
 	{
 		$stmt = $this->conn->prepare(
 			"UPDATE loans ".
-			"SET userid=?,loanername=?,staffname=?,loandate=?,returndate=?,completion=? ".
+			"SET loanername=?,staffname=?,loandate=?,returndate=?,completion=? ".
 			"WHERE loanid=?");
-		return $stmt->execute(array($loan["userid"], $loan["loanername"], $loan["staffname"], $loan["loandate"], $loan["returndate"], $loan["completion"], $id));
+		return $stmt->execute(array($loan["loanername"], $loan["staffname"], $loan["loandate"], $loan["returndate"], $loan["completion"], $id));
 	}
 }
 ?>

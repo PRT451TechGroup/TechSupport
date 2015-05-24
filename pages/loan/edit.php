@@ -13,9 +13,9 @@
 			<input type="hidden" name="__method" value="update" />
 			<input type="hidden" name="userid" value="<?=$loan['userid']?>" />
 			<ul data-role="listview" data-inset="false">
-				<li class="ui-field-contain">
+				<!-- <li class="ui-field-contain">
 					<?php Widgets::field_owner(array("owner" => $loanowner)); ?>
-				</li>
+				</li> -->
 				<li class="ui-field-contain">
 					<?php Widgets::field_loanername(array("loanername" => $loan["loanername"])); ?>
 				</li>
@@ -32,7 +32,7 @@
 				</li>
 				<li>
 					<?php Widgets::field_equipmentcount(array(
-						"equipmentcount" => $loan["equipmentcount"], "url" => "/loan/".$loanid."/equipment")); ?>
+						"equipmentcount" => $loan["equipmentcount"], "url" => "$appletRoot/$loanid/equipment")); ?>
 				</li>
 				<li class="ui-grid-a">
 					<div class="ui-block-a">

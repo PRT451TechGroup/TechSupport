@@ -24,7 +24,7 @@ class LoanApplet
 		$appletRoot = "/loan";
 
 
-		$_PAGE = array("APPLET_ROOT" => APPDIR.$appletRoot);
+		$_PAGE = array("APPLET_ROOT" => APPDIR.$appletRoot, "appletRoot" => $appletRoot);
 		$loans = new \Data\Table\Loans($datasource->open_connection());
 
 		// Applet index page
@@ -50,6 +50,16 @@ class LoanApplet
 		{
 			$loanid = $loans->insertLoan(Session::userid());
 			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid");
+		}
+		elseif ($path === "calendar")
+		{
+			$_PAGE += array
+			(
+				"back" => $appletRoot,
+				"categories" => $loans->countLoansByCategory()
+			);
+			Document::body(function() use($_PAGE) { Document::page("loan/review", $_PAGE); });
+			Document::build();
 		}
 		// Delete loan
 		elseif (preg_match('#^(?P<loanid>\d+)/delete$#', $path, $matches))
@@ -142,7 +152,7 @@ class LoanApplet
 			(
 				"back" => "$appletRoot/$loanid/equipment",
 				"equipmentid" => $equipmentid,
-				"equipment" => $loans->selectEquipmentById($loanid, $equipmentid)
+				"equipment" => $loans->selectEquipmentById($equipmentid)
 			);
 
 			Document::body(function() use($_PAGE) { Document::page("loan/equipment/edit", $_PAGE); });
@@ -154,7 +164,7 @@ class LoanApplet
 			$loanid = $matches["loanid"];
 			$equipmentid = $matches["equipmentid"];
 
-			$loans->deleteEquipmentById($loanid, $equipmentid);
+			$loans->deleteEquipmentById($equipmentid);
 
 			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid/equipment");
 		}

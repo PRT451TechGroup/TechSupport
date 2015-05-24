@@ -2,9 +2,9 @@
 	<div data-role="header" data-position="fixed">
 		<h1><?=Language::techsupport()?></h1>
 		<?=Widgets::logout()?>
-		<?=Widgets::back()?>
+		<?=Widgets::back($back)?>
 	</div>
 	<div data-role="content">
-		<p><?=Language::unknown_page(Bean::extract("path"))?></p>
+		<p><?=Language::unknown_page($path)?></p>
 	</div>
 </div>

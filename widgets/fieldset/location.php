@@ -3,7 +3,7 @@
 	<div class="ui-block-a">
 		<label for="precinct"><?=Language::precinct()?></label>
 		<select name="precinct">
-			<?php foreach(array("Purple", "Red", "Yellow") as $i): ?>
+			<?php foreach(array("Blue", "Green", "Orange", "Pink", "Purple", "Red", "Yellow") as $i): ?>
 			<option value="<?=$i?>" <?=Widgets::selected($precinct, $i)?>><?=$i?></option>
 			<?php endforeach; ?>
 		</select>
