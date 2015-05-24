@@ -13,3 +13,38 @@
 .propertylist .ui-block-b
 {
 }
+.slimselect .ui-select
+{
+display: inline !important; 
+position: relative !important; 
+}
+
+.fieldset-location .ui-controlgroup-controls {
+	width: 100% !important;
+}
+.fieldset-location .ui-controlgroup-controls .ui-select .field-precinct {
+	min-width: 8ch !important;
+}
+.fieldset-location .ui-controlgroup-controls .ui-select .field-number {
+	min-width: 2ch !important;
+}
+
+.fieldset-date .ui-controlgroup-controls {
+	width: 100% !important;
+}
+.fieldset-date .ui-controlgroup-controls .ui-select .field-year {
+	min-width: 4ch !important;
+}
+.fieldset-date .ui-controlgroup-controls .ui-select .field-month {
+	min-width: 10ch !important;
+}
+.fieldset-date .ui-controlgroup-controls .ui-select .field-day {
+	min-width: 4ch !important;
+}
+
+.fieldset-time .ui-controlgroup-controls {
+	width: 100% !important;
+}
+.fieldset-time .ui-controlgroup-controls .ui-select .field-number {
+	min-width: 4ch !important;
+}

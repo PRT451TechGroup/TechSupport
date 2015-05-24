@@ -8,7 +8,7 @@
 		$prevdiff = false;
 		function getTheme($daydiff)
 		{
-			$themes = "cdefgh";
+			$themes = "cdefg";
 			$daydiff = intval($daydiff) + 1;
 			if ($daydiff < 0)
 				$daydiff = 0;
@@ -27,7 +27,7 @@
 			<?php foreach($requests as $request): ?>
 				<?php if (diff_pos($request["daydiff"]) !== $prevdiff): ?>
 					<?php
-						$prevdiff = $request["daydiff"];
+						$prevdiff = diff_pos($request["daydiff"]);
 						$theme = getTheme($prevdiff);
 					?>
 					<?php if ($prevdiff < 0): ?>

@@ -79,7 +79,8 @@ Language::addString(array
 	"requirements" => "Requirements",
 	"request_calendar" => "Request Calendar",
 	"request_create" => "Create Request",
-	"request_edit" => "Edit Request"
+	"request_edit" => "Edit Request",
+	"request_overdue" => "Overdue"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",
