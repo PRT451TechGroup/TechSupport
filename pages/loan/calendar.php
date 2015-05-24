@@ -39,6 +39,7 @@
 					<a data-transition="slide" href="<?=$APPLET_ROOT.'/calendar/'.$loan['loanid']?>">
 						<h2><?=htmlspecialchars(loanname($loan))?></h2>
 						<p><strong>Loaned on <?=date('d M y', strtotime($loan["loandate"]))?></strong></p>
+						<p data-icon="calendar">Due on <?=date('d M y', strtotime($loan["returndate"]))?></p>
 						<span class="ui-li-count"><?=$loan["equipmentcount"]?></span>
 					</a>
 				</li>
