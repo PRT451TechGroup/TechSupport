@@ -106,17 +106,17 @@ class LoanApplet
 				$loan["loandate"] = (string)(new FSDateTime($args["loan_year"], $args["loan_month"], $args["loan_day"]));
 				$loan["returndate"] = (string)(new FSDateTime($args["return_year"], $args["return_month"], $args["return_day"]));
 				$loan["priority"] = $args["priority"];
-				$loan["completion"] = 0;
+				$loan["completion"] = isset($args["completion"]) ? $args["completion"] : 0;
 				$loans->updateLoan($loanid, $loan);
 				$cat = $loans->getCategoryById($loanid);
-				Document::redirect($_PAGE["APPLET_ROOT"]."/review/$cat");
+				Document::redirect(($_SESSION["loanmode"] !== "calendar") ? ($_PAGE["APPLET_ROOT"]."/review/$cat") : ($_PAGE["APPLET_ROOT"]."/calendar"));
 			}
 			else
 			{
 				$loan = $loans->selectLoanById($loanid);
 				$_PAGE += array
 				(
-					"back" => $appletRoot."/review/".$loans->categoryOf($loan['daydiff']),
+					"back" => ($_SESSION["loanmode"] !== "calendar") ? ($appletRoot."/review/".$loans->categoryOf($loan['daydiff'])) : ($appletRoot."/calendar"),
 					"loan" => $loan,
 					"loanid" => $loanid,
 					"loanowner" => $datasource->user_name(array("userid" => $loan["userid"]))

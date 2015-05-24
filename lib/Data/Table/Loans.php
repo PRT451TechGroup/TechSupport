@@ -117,7 +117,7 @@ class Loans
 	public function selectEquipmentByLoanId($id)
 	{
 		$stmt = $this->conn->prepare(
-			" SELECT le.loanid, e.* FROM loanequipment".
+			" SELECT le.loanid, e.*".
 			" FROM loanequipment AS le, equipment AS e".
 			" WHERE le.loanid=? AND le.equipmentid=e.equipmentid");
 
