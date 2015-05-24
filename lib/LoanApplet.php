@@ -51,14 +51,15 @@ class LoanApplet
 			$loanid = $loans->insertLoan(Session::userid());
 			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid");
 		}
+		// Calendar view
 		elseif ($path === "calendar")
 		{
 			$_PAGE += array
 			(
 				"back" => $appletRoot,
-				"categories" => $loans->countLoansByCategory()
+				"loans" => $loans->selectLoans
 			);
-			Document::body(function() use($_PAGE) { Document::page("loan/review", $_PAGE); });
+			Document::body(function() use($_PAGE) { Document::page("loan/calendar", $_PAGE); });
 			Document::build();
 		}
 		// Delete loan
@@ -76,12 +77,12 @@ class LoanApplet
 			if (isset($args["__method"]) && $args["__method"] === "update")
 			{
 				$loan = array();
-				$loan["userid"] = Session::userid();
 				$loan["loanid"] = $loanid;
-				$loan["loanername"] = $args["loanername"];
-				$loan["staffname"] = $args["staffname"];
+				$loan["creditor"] = $args["creditor"];
+				$loan["debtor"] = $args["debtor"];
 				$loan["loandate"] = (string)(new FSDateTime($args["loan_year"], $args["loan_month"], $args["loan_day"]));
 				$loan["returndate"] = (string)(new FSDateTime($args["return_year"], $args["return_month"], $args["return_day"]));
+				$loan["priority"] = $args["priority"];
 				$loan["completion"] = 0;
 				$loans->updateLoan($loanid, $loan);
 				$cat = $loans->getCategoryById($loanid);

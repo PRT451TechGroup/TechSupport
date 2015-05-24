@@ -63,7 +63,12 @@ Language::addString(array
 	"loanername" => "Loaner Name",
 	"staffname" => "Staff Name",
 	"loandate" => "Loan Date",
-	"returndate" => "Return Date"
+	"returndate" => "Return Date",
+	"creditor" => "Loaner",
+	"debtor" => "Borrower",
+	"loan_priority" => "Priority",
+	"loan_normal" => "Normal",
+	"loan_none" => "None"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",

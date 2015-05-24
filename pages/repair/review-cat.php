@@ -47,7 +47,7 @@
 			<?php if (count($repairs) == 0): ?>
 				<li data-role="list-divider"><?=Language::job_none()?></li>
 				<li>
-					<a href="<?APPDIR.$back?>" data-rel="back" class="ui-btn-icon-left ui-btn ui-icon-back"><?=Language::back()?></a>;
+					<a href="<?=APPDIR.$back?>" data-rel="back" class="ui-btn-icon-left ui-btn ui-icon-back"><?=Language::back()?></a>
 				</li>
 			<?php endif; ?>
 		</ul>

@@ -59,7 +59,7 @@ class Loans
 		$out = array();
 		foreach($this->dueCategories as $value)
 		{
-			$stmt = $this->conn->prepare("SELECT COUNT(loanid) AS loancount FROM loans WHERE completion >= 0 AND DATEDIFF(returndate, CURDATE()) $value");
+			$stmt = $this->conn->prepare("SELECT COUNT(loanid) AS loancount FROM loans WHERE completion = 0 AND DATEDIFF(returndate, CURDATE()) $value");
 			$stmt->execute();
 			$cnt = $stmt->fetch(\PDO::FETCH_ASSOC);
 			$out[] = $cnt["loancount"];
@@ -73,53 +73,16 @@ class Loans
 			" FROM loans".
 			" LEFT OUTER JOIN loanequipment".
 			" ON loanequipment.loanid=loans.loanid".
-			" WHERE DATEDIFF(loans.returndate, CURDATE()) $dcc".
+			" WHERE loans.completion = 0 AND DATEDIFF(loans.returndate, CURDATE()) $dcc".
 			" GROUP BY loans.loanid ".
-			" ORDER BY loans.returndate ASC ";
+			" ORDER BY loans.priority DESC, loans.returndate ASC ";
 		$stmt = $this->conn->prepare($sql);
 
 		if ($stmt->execute())
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-		/*
-		$stmt = $this->conn->prepare("SELECT * FROM loans WHERE completion >= 0 AND DATEDIFF(returndate, CURDATE()) $dcc ORDER BY returndate, loandate");
-		if ($stmt->execute())
-		{
-			$rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			
-			// map loan id to row index
-			$loanids = array();
-			$idlist = "";
-			foreach($rows as $rowKey => $rowValue)
-			{
-				$rows[$rowKey]["equipmentcount"] = "0";
-				$loanids[$rowValue["loanid"]] = $rowKey;
-				
-
-				if (strlen($idlist) > 0)
-					$idlist .= ",".$rowValue["loanid"];
-				else
-					$idlist .= $rowValue["loanid"];
-			}
-			//throw new \Exception($idlist);
-
-			if (strlen($idlist) > 0)
-			{
-				$countStatement = $this->conn->prepare("SELECT loanid, COUNT(equipmentid) FROM loanequipment WHERE loanid in ($idlist) GROUP BY loanid");
-				$countStatement->execute();
-				while(list($loanid, $equipmentcount) = $countStatement->fetch(\PDO::FETCH_NUM))
-				{
-					$rows[$loanids[$loanid]]["equipmentcount"] = $equipmentcount;
-				}
-			}
-
-			return $rows;
-		}*/
 	}
 	public function selectLoanById($id)
 	{
-		/*$stmt = $this->conn->prepare("SELECT *, DATEDIFF(returndate, CURDATE()) AS daydiff FROM loans WHERE loanid = ?");
-		if ($stmt->execute(array($id)))
-			return $stmt->fetch(\PDO::FETCH_ASSOC) + $this->selectEquipmentCountByLoanId($id);*/
 		$stmt = $this->conn->prepare(
 			" SELECT loans.*, DATEDIFF(loans.returndate, CURDATE()) AS daydiff, COUNT(loanequipment.loanid) AS equipmentcount".
 			" FROM loans".
@@ -131,8 +94,17 @@ class Loans
 	}
 	public function selectLoans($limit = 1000)
 	{
-		$stmt = $this->conn->prepare("SELECT * FROM loans WHERE completion >= 0");
-		if ($stmt->execute(array()))
+		$sql =  " SELECT loans.*, DATEDIFF(loans.returndate, CURDATE()) AS daydiff, COUNT(loanequipment.loanid) AS equipmentcount".
+			" FROM loans".
+			" LEFT OUTER JOIN loanequipment".
+			" ON loanequipment.loanid=loans.loanid".
+			" WHERE loans.completion = 0".
+			" GROUP BY loans.loanid ".
+			" ORDER BY loans.returndate ASC, loans.priority DESC".
+			" LIMIT $limit";
+		$stmt = $this->conn->prepare($sql);
+
+		if ($stmt->execute())
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 	}
 	public function selectEquipmentCountByLoanId($id)
@@ -145,9 +117,9 @@ class Loans
 	public function selectEquipmentByLoanId($id)
 	{
 		$stmt = $this->conn->prepare(
-			"SELECT le.loanid AS loanid, e.equipmentid AS equipmentid, e.equipmentname AS equipmentname, e.assetno AS assetno ".
-			"FROM loanequipment AS le, equipment AS e ".
-			"WHERE le.loanid=? AND le.equipmentid=e.equipmentid");
+			" SELECT le.loanid, e.* FROM loanequipment".
+			" FROM loanequipment AS le, equipment AS e".
+			" WHERE le.loanid=? AND le.equipmentid=e.equipmentid");
 
 		if ($stmt->execute(array($id)))
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -155,9 +127,9 @@ class Loans
 	public function selectEquipmentById($equipmentid)
 	{
 		$stmt = $this->conn->prepare(
-			"SELECT le.loanid AS loanid, e.equipmentid AS equipmentid, e.equipmentname AS equipmentname, e.assetno AS assetno ".
-			"FROM loanequipment AS le, equipment AS e ".
-			"WHERE le.equipmentid=? AND le.equipmentid=e.equipmentid");
+			" SELECT le.loanid, e.* ".
+			" FROM loanequipment AS le, equipment AS e ".
+			" WHERE le.equipmentid=? AND le.equipmentid=e.equipmentid");
 
 		if ($stmt->execute(array($equipmentid)))
 			return $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -171,9 +143,9 @@ class Loans
 	public function updateEquipment($equipmentid, $equipment)
 	{
 		$stmt = $this->conn->prepare(
-			"UPDATE equipment ".
-			"SET equipmentname=?,assetno=? ".
-			"WHERE equipmentid=?");
+			" UPDATE equipment".
+			" SET equipmentname=?,assetno=?".
+			" WHERE equipmentid=?");
 
 		return $stmt->execute(array($equipment["equipmentname"], $equipment["assetno"], $equipmentid));
 	}
@@ -195,9 +167,9 @@ class Loans
 	{
 		$stmt = $this->conn->prepare(
 			"UPDATE loans ".
-			"SET loanername=?,staffname=?,loandate=?,returndate=?,completion=? ".
+			"SET creditor=?,debtor=?,loandate=?,returndate=?,priority=?,completion=? ".
 			"WHERE loanid=?");
-		return $stmt->execute(array($loan["loanername"], $loan["staffname"], $loan["loandate"], $loan["returndate"], $loan["completion"], $id));
+		return $stmt->execute(array($loan["creditor"], $loan["debtor"], $loan["loandate"], $loan["returndate"], $loan["priority"], $loan["completion"], $id));
 	}
 }
 ?>

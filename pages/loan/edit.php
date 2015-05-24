@@ -17,10 +17,10 @@
 					<?php Widgets::field_owner(array("owner" => $loanowner)); ?>
 				</li> -->
 				<li class="ui-field-contain">
-					<?php Widgets::field_loanername(array("loanername" => $loan["loanername"])); ?>
+					<?php Widgets::field_creditor(array("creditor" => $loan["creditor"])); ?>
 				</li>
 				<li class="ui-field-contain">
-					<?php Widgets::field_staffname(array("staffname" => $loan["staffname"])); ?>
+					<?php Widgets::field_debtor(array("debtor" => $loan["debtor"])); ?>
 				</li>
 				<li class="ui-field-contain">
 					<?php Widgets::fieldset_date(array("prefix" => "loan_", "label" => Language::loandate()) +
@@ -29,6 +29,9 @@
 				<li class="ui-field-contain">
 					<?php Widgets::fieldset_date(array("prefix" => "return_", "label" => Language::returndate()) +
 						$returndate->to_array()); ?>
+				</li>
+				<li class="ui-field-contain">
+					<?php Widgets::field_priority(array("priority" => $loan["priority"])); ?>
 				</li>
 				<li>
 					<?php Widgets::field_equipmentcount(array(
