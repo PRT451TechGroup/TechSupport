@@ -59,6 +59,7 @@ Language::addString(array
 	"precinct" => "Precinct",
 	"loan_review" => "Review Loans",
 	"loan_create" => "Create Loan",
+	"loan_calendar" => "Loan Calendar",
 	"loan_edit" => "Edit Loan",
 	"loanername" => "Loaner Name",
 	"staffname" => "Staff Name",
@@ -68,7 +69,11 @@ Language::addString(array
 	"debtor" => "Borrower",
 	"loan_priority" => "Priority",
 	"loan_normal" => "Normal",
-	"loan_none" => "None"
+	"loan_none" => "None",
+	"today" => "Today",
+	"tomorrow" => "Tomorrow",
+	"loan_overdue" => "Overdue",
+	"loan_view" => "View Loan"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",
@@ -97,5 +102,10 @@ Language::addCallback("monthat", function($data)
 {
 	$a = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 	return $a[$data["month"]];
+});
+Language::addCallback("dayat", function($data)
+{
+	$a = array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+	return $a[$data["day"]];
 });
 ?>

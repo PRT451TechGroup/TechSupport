@@ -27,6 +27,11 @@ class LoanApplet
 		$_PAGE = array("APPLET_ROOT" => APPDIR.$appletRoot, "appletRoot" => $appletRoot);
 		$loans = new \Data\Table\Loans($datasource->open_connection());
 
+		if (!isset($_SESSION["loanmode"]))
+		{
+			$_SESSION["loanmode"] = "review";
+		}
+
 		// Applet index page
 		if (strlen($path) === 0)
 		{
@@ -37,6 +42,7 @@ class LoanApplet
 		// Review Loans
 		elseif ($path === "review")
 		{
+			$_SESSION["loanmode"] = "review";
 			$_PAGE += array
 			(
 				"back" => $appletRoot,
@@ -54,12 +60,29 @@ class LoanApplet
 		// Calendar view
 		elseif ($path === "calendar")
 		{
+			$_SESSION["loanmode"] = "calendar";
 			$_PAGE += array
 			(
 				"back" => $appletRoot,
-				"loans" => $loans->selectLoans
+				"loans" => $loans->selectLoans(),
+				"categoryOf" => function($daydiff) use($loans) { return $loans->categoryOf($daydiff); }
 			);
 			Document::body(function() use($_PAGE) { Document::page("loan/calendar", $_PAGE); });
+			Document::build();
+		}
+		// Calendar view loan
+		elseif (preg_match('#^calendar/(?P<loanid>\d+)$#', $path, $matches))
+		{
+			$loanid = $matches["loanid"];
+
+			$_PAGE += array
+			(
+				"back" => "$appletRoot/calendar",
+				"loanid" => $loanid,
+				"loan" => $loans->selectLoanById($loanid),
+				"equipment" => $loans->selectEquipmentByLoanId($loanid)
+			);
+			Document::body(function() use($_PAGE) { Document::page("loan/view", $_PAGE); });
 			Document::build();
 		}
 		// Delete loan
