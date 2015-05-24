@@ -73,7 +73,13 @@ Language::addString(array
 	"today" => "Today",
 	"tomorrow" => "Tomorrow",
 	"loan_overdue" => "Overdue",
-	"loan_view" => "View Loan"
+	"loan_view" => "View Loan",
+	"techname" => "Technician Name",
+	"staffname" => "Staff Name",
+	"requirements" => "Requirements",
+	"request_calendar" => "Request Calendar",
+	"request_create" => "Create Request",
+	"request_edit" => "Edit Request"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",
