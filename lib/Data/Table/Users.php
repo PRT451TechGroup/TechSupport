@@ -64,5 +64,17 @@ class Users
 			return $lst;
 		}
 	}
+	public function resetPassword($username, $email)
+	{
+		$code = base64_encode(openssl_random_pseudo_bytes(16));
+		$stmt = $this->conn->prepare("UPDATE users SET resetcode=?,resetexpire=DATE_ADD(NOW(), INTERVAL 24 HOUR) WHERE (username=? AND email=? AND resetexpire < DATE_ADD(NOW(), INTERVAL 23 HOUR)) OR (resetexpire IS NULL AND resetcode IS NULL)");
+		if ($stmt->execute(array($code, $username, $email)))
+		{
+			$stmt = $this->conn->prepare("SELECT userid, username, email, resetcode FROM users WHERE username=? AND email=? AND resetcode=?");
+			if ($stmt->execute(array($username, $email, $code)))
+				return $stmt->fetch(\PDO::FETCH_ASSOC) ?: false;
+		}
+		return false;
+	}
 }
 ?>

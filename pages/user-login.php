@@ -13,13 +13,15 @@
 					<label for="password"><?=Language::password()?></label>
 					<input type="password" name="password" />
 				</li>
-				<li class="ui-grid-a">
-					<div class="ui-block-a">
-						<a class="ui-btn" href="<?=APPDIR?>/user/register"><?=Language::register()?></a>
-					</div>
-					<div class="ui-block-b">	
-						<input type="submit" value="<?=Language::login()?>" data-icon="lock" />
-					</div>
+				
+				<li>
+					<input type="submit" value="<?=Language::login()?>" data-icon="lock" />
+				</li>
+				<li>
+					<a class="ui-btn ui-icon-user ui-btn-icon-left" href="<?=APPDIR?>/user/register"><?=Language::register()?></a>
+				</li>
+				<li>
+					<a class="ui-btn ui-icon-refresh ui-btn-icon-left" href="<?=APPDIR?>/user/forgot"><?=Language::forgot_password()?></a>
 				</li>
 			</ul>
 		</form?

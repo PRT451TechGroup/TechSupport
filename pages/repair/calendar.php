@@ -34,7 +34,7 @@
 					<?php
 						$prevdate = $repair["duedate"];
 					?>
-					<li data-theme="b" data-role="list-divider"><?=date('l, jS \of F, Y', strtotime($repair["duedate"]))?></li>
+					<li data-role="list-divider"><?=date('l, jS \of F, Y', strtotime($repair["duedate"]))?></li>
 				<?php endif; ?>
 				
 				<li data-theme="<?=getTheme($repair['completion'])?>">

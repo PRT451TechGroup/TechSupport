@@ -91,7 +91,9 @@ Language::addString(array
 	"request_completed" => "Completed Requests",
 	"request_view" => "View Request",
 	"email" => "Email",
-	"email_invalid" => "Invalid email"
+	"email_invalid" => "Invalid email",
+	"forgot_password" => "Forgot password",
+	"reset_password" => "Reset password"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",

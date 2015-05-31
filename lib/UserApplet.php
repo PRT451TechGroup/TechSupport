@@ -24,6 +24,12 @@ class UserApplet
 				"*" => "default",
 				"submit" => "register-submit"
 			),
+			"forgot" => array
+			(
+				"." => "forgot",
+				"*" => "default",
+				"submit" => "forgot-submit"
+			),
 			"logout" => "logout"
 		));
 
@@ -63,6 +69,55 @@ class UserApplet
 				$_PAGE["back"] = "/user";
 				Document::body(function() use($_PAGE) { Document::page("user-login", $_PAGE); });
 				Document::build();
+				break;
+			case "forgot":
+				$_PAGE["back"] = "/user";
+				Document::body(function() use($_PAGE) { Document::page("user-forgot", $_PAGE); });
+				Document::build();
+				break;
+			case "forgot-submit":
+				if ($args->containsKey("username", "email"))
+				{
+					$err = true;
+					$_PAGE["back"] = "/user/forgot";
+
+					if (strlen($args->username) == 0)
+						$_PAGE["error"] = Language::username_blank();
+					else if (!preg_match('/[A-Za-z0-9._%+-]+@[a-zA-Z0-9][a-zA-Z0-9-]{1,61}(?:\.[a-zA-Z0-9][a-zA-Z0-9-]{1,61})+/', $args->email))
+						$_PAGE["error"] = Language::email_invalid();
+					else
+					{
+						//$uid = $datasource->user_register(array("username" => $args->username, "password" => $args->password));
+						$user = $users->resetPassword($args->username, $args->email);
+						if ($user === false)
+						{
+							$_PAGE["error"] = "Invalid credentials";
+						}
+						else
+						{
+							$err = false;
+						}
+					}
+
+
+					if ($err)
+					{
+						Document::body(function() use($_PAGE) { Document::page("forgot-error", $_PAGE); });
+						Document::build();
+					}
+					else
+					{
+						mail($args->email, "Password reset", "Reset code: ".$user["resetcode"], Configuration::mailheader());
+						//$_PAGE["error"] = json_encode($user);
+						//Document::body(function() use($_PAGE) { Document::page("forgot-error", $_PAGE); });
+						//Document::build();
+						Document::redirect(APPDIR."/");
+					}
+				}
+				else
+				{
+					Document::redirect(APPDIR."/user/forgot");
+				}
 				break;
 			case "register":
 				$_PAGE["back"] = "/user";
