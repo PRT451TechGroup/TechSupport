@@ -7,6 +7,7 @@
 	<div data-role="content">
 		<ul data-role="listview" data-inset="true">
 			<li data-icon="bars"><a href="<?=$APPLET_ROOT?>/review" data-transition="slide"><?=Language::repair_review()?></a></li>
+			<li data-icon="calendar"><a href="<?=$APPLET_ROOT?>/calendar" data-transition="slide"><?=Language::repair_calendar()?></a></li>
 			<li data-icon="plus"><a href="<?=$APPLET_ROOT?>/create" data-transition="slide"><?=Language::repair_create()?></a></li>
 		</ul>
 	</div>

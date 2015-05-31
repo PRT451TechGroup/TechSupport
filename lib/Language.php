@@ -28,7 +28,10 @@ class Language
 				return self::$stringTable[$name];
 			case "callable";
 				$cb = self::$callbackTable[$name];
-				return $cb($args);
+				if (is_null($args) || is_array($args))
+					return $cb($args);
+				else
+					throw new Exception("Callable resource '$name' may only accept an array argument");
 			default:
 				throw new Exception('Resource '.$name.' does not exist');
 		}

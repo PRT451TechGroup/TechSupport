@@ -1,5 +1,4 @@
 <?php
-// spaghetti code needs to be cleaned up to same standard as LoanApplet
 class RepairApplet
 {
 	private $app;
@@ -21,9 +20,28 @@ class RepairApplet
 
 		$appletRoot = "/repair";
 
+		if (!isset($_SESSION["repairmode"]))
+		{
+			$_SESSION["repairmode"] = "review";
+		}
 
 		$_PAGE = array("APPLET_ROOT" => APPDIR.$appletRoot, "appletRoot" => $appletRoot);
 		$repairs = new \Data\Table\Repairs($datasource->open_connection());
+
+		$previousView = function($completion = null) use($appletRoot, $repairs)
+		{
+			if ($_SESSION["repairmode"] == "review")
+			{
+				if (intval($completion) >= 0)
+					return "$appletRoot/review/$completion";
+				else
+					return "$appletRoot";
+			}
+			elseif ($_SESSION["repairmode"] == "calendar")
+			{
+				return "$appletRoot/calendar";
+			}
+		};
 
 		// index
 		if (strlen($path) === 0)
@@ -37,6 +55,7 @@ class RepairApplet
 		{
 			$_PAGE["back"] = "/repair";
 			$_PAGE["completion"] = $datasource->repair_completion();
+			$_SESSION["repairmode"] = "review";
 			Document::body(function() use($_PAGE) { Document::page("repair/review", $_PAGE); });
 			Document::build();
 		}
@@ -46,15 +65,40 @@ class RepairApplet
 			$repairid = $repairs->insertRepair(Session::userid());
 			Document::redirect($_PAGE["APPLET_ROOT"]."/$repairid");
 		}
+		// repair-calendar
+		elseif ($path === "calendar")
+		{
+			$_SESSION["repairmode"] = "calendar";
+			$_PAGE["back"] = "/repair";
+			$_PAGE["repairs"] = $repairs->selectRepairs();
+			Document::body(function() use($_PAGE) { Document::page("repair/calendar", $_PAGE); });
+			Document::build();
+		}
 		// review-cat
 		elseif (preg_match('#^review/(?P<completion>\d+)$#', $path, $matches))
 		{
+			$_SESSION["repairmode"] = "review";
 			$completion = $matches["completion"];
 			
 			$_PAGE["completion"] = $completion;
 			$_PAGE["repairs"] = $repairs->selectRepairsByCompletion($completion);
 			$_PAGE["back"] = "$appletRoot/review";
 			Document::body(function() use($_PAGE) { Document::page("repair/review-cat", $_PAGE); });
+			Document::build();
+		}
+		// repair-view
+		elseif (preg_match('#^view/(?P<repairid>\d+)$#', $path, $matches))
+		{
+			$repairid = $matches["repairid"];
+			$repair = $repairs->selectRepairById($repairid);
+
+			
+			$_PAGE["repairid"] = $repairid;
+			$_PAGE["repair"] = $repair;
+			$_PAGE["back"] = $previousView($repair["completion"]);
+			$_PAGE["equipment"] = $repairs->selectEquipmentByRepairId($repairid);
+
+			Document::body(function() use($_PAGE) { Document::page("repair/view", $_PAGE); });
 			Document::build();
 		}
 		// repair
@@ -73,7 +117,8 @@ class RepairApplet
 
 				$repairs->updateRepair($repairid, $repair);
 
-				Document::redirect($_PAGE["APPLET_ROOT"]."/review/".$args["completion"]);
+				//Document::redirect($_PAGE["APPLET_ROOT"]."/review/".$args["completion"]);
+				Document::redirect($_PAGE["APPLET_ROOT"]."/view/$repairid");
 			}
 			else
 			{
@@ -85,7 +130,8 @@ class RepairApplet
 				$_PAGE["completion"] = $completion;
 				$_PAGE["repair"] = $repair;
 				
-				$_PAGE["back"] = "/repair/review/$completion";
+				//$_PAGE["back"] = "/repair/review/$completion";
+				$_PAGE["back"] = "$appletRoot/view/$repairid";
 				$_PAGE["repairusername"] = $datasource->user_name(array("userid" => $repair["userid"]));
 				Document::body(function() use($_PAGE) { Document::page("repair/edit", $_PAGE); });
 				Document::build();

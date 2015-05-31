@@ -11,6 +11,7 @@ class UserApplet
 		$path = $this->app->path();
 		$args = new ArrayList($this->app->arguments());
 		$datasource = $this->app->datasource();
+		$users = new \Data\Table\Users($datasource->open_connection());
 		
 		$match = $path->match(array
 		(
@@ -37,7 +38,8 @@ class UserApplet
 			case "login-submit":
 				if ($args->containsKey("username", "password"))
 				{
-					$uid = $datasource->user_login(array("username" => $args->username, "password" => $args->password));
+					//$uid = $datasource->user_login(array("username" => $args->username, "password" => $args->password));
+					$uid = $users->selectUserIdByCredentials($args->username, $args->password);
 					if ($uid !== false)
 					{
 						Session::userid($uid);
@@ -71,6 +73,7 @@ class UserApplet
 				if ($args->containsKey("username", "password", "vpassword"))
 				{
 					$err = true;
+					$_PAGE["back"] = "/user/register";
 
 					if (strlen($args->username) == 0)
 						$_PAGE["error"] = Language::username_blank();
@@ -79,19 +82,32 @@ class UserApplet
 					else if (strlen($args->password) == 0)
 						$_PAGE["error"] = (Language::password_blank());
 					else
-						$err = false;
+					{
+						//$uid = $datasource->user_register(array("username" => $args->username, "password" => $args->password));
+						$uid = $users->insertUser($args->username, $args->password);
+						if ($uid === false)
+						{
+							$_PAGE["error"] = Language::user_exists();
+						}
+						else
+						{
+							Session::userid($uid);
+							Session::username($args->username);
+							$err = false;
+						}
+					}
 
 
 					if ($err)
 					{
-						Document::body(function() { Document::page("register-error"); });
+						Document::body(function() use($_PAGE) { Document::page("register-error", $_PAGE); });
 						Document::build();
 					}
 					else
 					{
 						
 
-						$uid = $datasource->user_register(array("username" => $args->username, "password" => $args->password));
+						
 						Document::redirect(APPDIR."/");
 					}
 				}

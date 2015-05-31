@@ -80,7 +80,10 @@ Language::addString(array
 	"request_calendar" => "Request Calendar",
 	"request_create" => "Create Request",
 	"request_edit" => "Edit Request",
-	"request_overdue" => "Overdue"
+	"request_overdue" => "Overdue",
+	"user_exists" => "Username is already taken",
+	"repair_view" => "View Repair",
+	"repair_calendar" => "Repair Calendar"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",
@@ -97,8 +100,17 @@ Language::addCallback("goodlogin", function($data)
 });
 Language::addCallback("completion", function($data)
 {
-	$a = array("Not Done", "Partially Done", "Half Done", "Almost Done", "Done");
-	return $a[$data["completion"]];
+	$completion = $data["completion"];
+
+	if (intval($completion) >= 0)
+	{
+		$a = array("Not Done", "Partially Done", "Half Done", "Almost Done", "Done");
+		return $a[$completion];
+	}
+	else
+	{
+		return "None";
+	}
 });
 Language::addCallback("duecat", function($data)
 {

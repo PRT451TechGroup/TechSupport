@@ -29,6 +29,19 @@ class Repairs
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		}
 	}
+	public function selectRepairs()
+	{
+		$stmt = $this->conn->prepare(
+			" SELECT r.*, COUNT(re.repairid) AS equipmentcount".
+			" FROM repairs r".
+			" LEFT OUTER JOIN repairequipment re".
+			" ON re.repairid=r.repairid".
+			" WHERE r.completion >= 0".
+			" GROUP BY r.repairid".
+			" ORDER BY r.duedate DESC");
+		if ($stmt->execute())
+			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+	}
 	public function selectRepairById($id)
 	{
 		$stmt = $this->conn->prepare("SELECT * FROM repairs WHERE repairid=?");

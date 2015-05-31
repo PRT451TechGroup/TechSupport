@@ -5,6 +5,6 @@
 		<?=Widgets::back($back)?>
 	</div>
 	<div data-role="content">
-		<p><?=Language::unknown_page($path)?></p>
+		<p><?=Language::unknown_page(array("path" => $path))?></p>
 	</div>
 </div>

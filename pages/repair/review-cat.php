@@ -23,7 +23,7 @@
 				<li data-role="list-divider"><?=Language::job_priority()?></li>
 			<?php endif; ?>
 			<li>
-				<a href="<?=APPDIR?>/repair/<?=$repair['repairid']?>" data-transition="slide">
+				<a href="<?=APPDIR?>/repair/view/<?=$repair['repairid']?>" data-transition="slide">
 					<?=jobname($repair)?><span class="ui-li-count"><?=$repair["location"]?></span>
 				</a>
 			</li>
@@ -38,7 +38,7 @@
 				<li data-role="list-divider"><?=Language::job_normal()?></li>
 			<?php endif; ?>
 			<li>
-				<a href="<?=APPDIR?>/repair/<?=$repair['repairid']?>" data-transition="slide">
+				<a href="<?=APPDIR?>/repair/view/<?=$repair['repairid']?>" data-transition="slide">
 					<?=jobname($repair)?><span class="ui-li-count"><?=$repair["location"]?></span>
 				</a>
 			</li>
