@@ -1,6 +1,6 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
 	<div data-role="header">
-		<h1><?=Language::request_calendar()?></h1>
+		<h1><?=$calendar_title?></h1>
 		<?=Widgets::logout()?>
 		<?=Widgets::back($back)?>
 	</div>
@@ -46,7 +46,7 @@
 				<?php endif; ?>
 				
 				<li>
-					<a data-transition="slide" href="<?=$APPLET_ROOT.'/'.$request['requestid']?>">
+					<a data-transition="slide" href="<?=$APPLET_ROOT.'/'.$calendar_mode.'/'.$request['requestid']?>">
 						<h2><?=requestname($request)?></h2>
 						<p><strong>Request Due <?=date('d M y', strtotime($request["duedate"]))?></strong></p>
 						<?php if (intval($request["priority"]) > 0): ?>

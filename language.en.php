@@ -83,7 +83,15 @@ Language::addString(array
 	"request_overdue" => "Overdue",
 	"user_exists" => "Username is already taken",
 	"repair_view" => "View Repair",
-	"repair_calendar" => "Repair Calendar"
+	"repair_calendar" => "Repair Calendar",
+	"completion2" => "Completed",
+	"completion_yes" => "Yes",
+	"completion_no" => "No",
+	"loan_completed" => "Completed Loans",
+	"request_completed" => "Completed Requests",
+	"request_view" => "View Request",
+	"email" => "Email",
+	"email_invalid" => "Invalid email"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",

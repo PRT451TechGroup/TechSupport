@@ -21,14 +21,14 @@ class Users
 		}
 		return false;
 	}
-	public function insertUser($username, $password)
+	public function insertUser($username, $password, $email)
 	{
-		$stmt = $this->conn->prepare("INSERT INTO users (username, hash, salt) VALUES (?, ?, ?)");
+		$stmt = $this->conn->prepare("INSERT INTO users (username, email, hash, salt) VALUES (?, ?, ?, ?)");
 		$auth = \Authenticator::from_password($password);
 
 		try
 		{
-			if ($stmt->execute(array($username, $auth->hash(), $auth->salt())))
+			if ($stmt->execute(array($username, $email, $auth->hash(), $auth->salt())))
 				return $this->conn->lastInsertId();
 		}
 		catch(\PDOException $e)

@@ -44,6 +44,7 @@ class RequestApplet
 				$request["location"] = (string)(new FSLocation($args["precinct"], $args["building"], $args["floor"], $args["room"]));
 				$request["duedate"] = (string)(new FSDateTime($args["year"], $args["month"], $args["day"], $args["hour"], $args["minute"]));
 				$request["priority"] = $args["priority"];
+				$request["completed"] = 0;
 
 				$requests->insertRequest(Session::userid(), $request);
 				
@@ -57,11 +58,37 @@ class RequestApplet
 			}
 		}
 		// review-cat
-		elseif ($path === "calendar")
+		elseif ($path === "calendar" || $path === "completed")
 		{
-			$_PAGE["requests"] = $requests->selectRequests(Session::userid());
+			$_PAGE += ($path === "calendar") ?
+			array
+			(
+				"requests" => $requests->selectRequests(Session::userid()),
+				"calendar_title" => Language::request_calendar()
+			) :
+			array
+			(
+				"requests" => $requests->selectCompletedRequests(Session::userid()),
+				"calendar_title" => Language::request_completed()
+			);
+			$_PAGE["calendar_mode"] = $path;
 			$_PAGE["back"] = "$appletRoot";
 			Document::body(function() use($_PAGE) { Document::page("request/calendar", $_PAGE); });
+			Document::build();
+		}
+		// request-view
+		elseif (preg_match('#^(?P<mode>calendar|completed)/(?P<requestid>\d+)$#', $path, $matches))
+		{
+			$mode = $matches["mode"];
+			$requestid = $matches["requestid"];
+			$request = $requests->selectRequestByid($requestid);
+
+			$_PAGE["back"] = "$appletRoot/$mode";
+			$_PAGE["requestid"] = $requestid;
+			$_PAGE["request"] = $request;
+
+			
+			Document::body(function() use($_PAGE) { Document::page("request/view", $_PAGE); });
 			Document::build();
 		}
 		// request
@@ -77,6 +104,7 @@ class RequestApplet
 				$request["location"] = (string)(new FSLocation($args["precinct"], $args["building"], $args["floor"], $args["room"]));
 				$request["duedate"] = (string)(new FSDateTime($args["year"], $args["month"], $args["day"], $args["hour"], $args["minute"]));
 				$request["priority"] = $args["priority"];
+				$request["completed"] = $args["completion"];
 
 				$requests->updateRequest($requestid, $request);
 

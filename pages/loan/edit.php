@@ -31,6 +31,9 @@
 						$returndate->to_array()); ?>
 				</li>
 				<li class="ui-field-contain">
+					<?php Widgets::field_completion2(array("completion" => $loan["completion"])); ?>
+				</li>
+				<li class="ui-field-contain">
 					<?php Widgets::field_priority(array("priority" => $loan["priority"])); ?>
 				</li>
 				<li>

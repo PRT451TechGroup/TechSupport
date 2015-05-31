@@ -1,6 +1,6 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
 	<div data-role="header">
-		<h1><?=Language::loan_review()?></h1>
+		<h1><?=$calendar_title?></h1>
 		<?=Widgets::logout()?>
 		<?=Widgets::back($back)?>
 	</div>
@@ -36,7 +36,7 @@
 				<?php endif; ?>
 				
 				<li>
-					<a data-transition="slide" href="<?=$APPLET_ROOT.'/calendar/'.$loan['loanid']?>">
+					<a data-transition="slide" href="<?=$APPLET_ROOT.'/'.$calendar_mode.'/'.$loan['loanid']?>">
 						<h2><?=htmlspecialchars(loanname($loan))?></h2>
 						<p><strong>Loaned on <?=date('d M y', strtotime($loan["loandate"]))?></strong></p>
 						<p data-icon="calendar">Due on <?=date('d M y', strtotime($loan["returndate"]))?></p>

@@ -107,6 +107,21 @@ class Loans
 		if ($stmt->execute())
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 	}
+	public function selectCompletedLoans($limit = 1000)
+	{
+		$sql =  " SELECT loans.*, DATEDIFF(loans.returndate, CURDATE()) AS daydiff, COUNT(loanequipment.loanid) AS equipmentcount".
+			" FROM loans".
+			" LEFT OUTER JOIN loanequipment".
+			" ON loanequipment.loanid=loans.loanid".
+			" WHERE loans.completion = 1".
+			" GROUP BY loans.loanid ".
+			" ORDER BY loans.returndate ASC, loans.priority DESC".
+			" LIMIT $limit";
+		$stmt = $this->conn->prepare($sql);
+
+		if ($stmt->execute())
+			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+	}
 	public function selectEquipmentCountByLoanId($id)
 	{
 		$stmt = $this->conn->prepare("SELECT COUNT(equipmentid) AS equipmentcount FROM loanequipment WHERE loanid=?");

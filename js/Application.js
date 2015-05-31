@@ -15,7 +15,7 @@ var Application = new ($Class.define(function()
 			$(this).trigger("create");
 			$(this).find("[data-role=listview]").listview("refresh");
 		});
-		$(document).delegate("select[name=completion]", "change", function()
+		$(document).delegate("select[name=completion][data-theme]", "change", function()
 		{
 			var $this = $(this);
 			var $val = $this.val();

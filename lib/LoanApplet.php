@@ -58,26 +58,39 @@ class LoanApplet
 			Document::redirect($_PAGE["APPLET_ROOT"]."/$loanid");
 		}
 		// Calendar view
-		elseif ($path === "calendar")
+		elseif ($path === "calendar" || $path === "completed")
 		{
 			$_SESSION["loanmode"] = "calendar";
+			$_PAGE += ($path === "completed") ?
+			array
+			(
+				"calendar_title" => Language::loan_completed(),
+				"loans" => $loans->selectCompletedLoans()
+			) :
+			array
+			(
+				"calendar_title" => Language::loan_review(),
+				"loans" => $loans->selectLoans()
+			);
 			$_PAGE += array
 			(
+				"calendar_mode" => $path,
 				"back" => $appletRoot,
-				"loans" => $loans->selectLoans(),
 				"categoryOf" => function($daydiff) use($loans) { return $loans->categoryOf($daydiff); }
 			);
 			Document::body(function() use($_PAGE) { Document::page("loan/calendar", $_PAGE); });
 			Document::build();
 		}
 		// Calendar view loan
-		elseif (preg_match('#^calendar/(?P<loanid>\d+)$#', $path, $matches))
+		elseif (preg_match('#^(?P<mode>calendar|completed)/(?P<loanid>\d+)$#', $path, $matches))
 		{
 			$loanid = $matches["loanid"];
+			$mode = $matches["mode"];
 
 			$_PAGE += array
 			(
-				"back" => "$appletRoot/calendar",
+				"calendar_mode" => $mode,
+				"back" => "$appletRoot/$mode",
 				"loanid" => $loanid,
 				"loan" => $loans->selectLoanById($loanid),
 				"equipment" => $loans->selectEquipmentByLoanId($loanid)

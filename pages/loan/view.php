@@ -47,6 +47,7 @@
 				listEntry(Language::debtor(), $loan["debtor"]);
 				listEntry(Language::loandate(), date('Y-m-d', strtotime($loan["loandate"])));
 				listEntry(Language::returndate(), date('Y-m-d', strtotime($loan["returndate"])));
+				listEntry(Language::completion2(), intval($loan["completion"]) ? "Yes" : "No");
 				listEntry(Language::priority(), intval($loan["priority"]) ? "Yes" : "No");
 			?>
 			<li data-role="list-divider">Equipment</li>

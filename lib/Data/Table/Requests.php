@@ -19,7 +19,15 @@ class Requests
 	}
 	public function selectRequests($userid)
 	{
-		$sql =  "SELECT *, DATEDIFF(duedate, CURDATE()) AS daydiff FROM requests WHERE userid=? ORDER BY duedate ASC";
+		$sql =  "SELECT *, DATEDIFF(duedate, CURDATE()) AS daydiff FROM requests WHERE userid=? AND completed=0 ORDER BY duedate ASC";
+		$stmt = $this->conn->prepare($sql);
+
+		if ($stmt->execute(array($userid)))
+			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+	}
+	public function selectCompletedRequests($userid)
+	{
+		$sql =  "SELECT *, DATEDIFF(duedate, CURDATE()) AS daydiff FROM requests WHERE userid=? AND completed=1 ORDER BY duedate ASC";
 		$stmt = $this->conn->prepare($sql);
 
 		if ($stmt->execute(array($userid)))
@@ -27,17 +35,17 @@ class Requests
 	}
 	public function insertRequest($userid, $request)
 	{
-		$stmt = $this->conn->prepare("INSERT INTO requests (userid, techname, staffname, requirements, location, duedate, priority) VALUES (?, ?, ?, ?, ?, ?, ?)");
-		if ($stmt->execute(array($userid, $request["techname"], $request["staffname"], $request["requirements"], $request["location"], $request["duedate"], $request["priority"])))
+		$stmt = $this->conn->prepare("INSERT INTO requests (userid, techname, staffname, requirements, location, duedate, priority, completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+		if ($stmt->execute(array($userid, $request["techname"], $request["staffname"], $request["requirements"], $request["location"], $request["duedate"], $request["priority"], $request["completed"])))
 			return $this->conn->lastInsertId();
 	}
 	public function updateRequest($id, $request)
 	{
 		$stmt = $this->conn->prepare(
 			" UPDATE requests".
-			" SET techname=?,staffname=?,requirements=?,location=?,duedate=?,priority=?".
+			" SET techname=?,staffname=?,requirements=?,location=?,duedate=?,priority=?,completed=?".
 			" WHERE requestid=?");
-		return $stmt->execute(array($request["techname"], $request["staffname"], $request["requirements"], $request["location"], $request["duedate"], $request["priority"], $id));
+		return $stmt->execute(array($request["techname"], $request["staffname"], $request["requirements"], $request["location"], $request["duedate"], $request["priority"], $request["completed"], $id));
 	}
 }
 ?>

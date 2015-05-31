@@ -12,6 +12,10 @@
 					<input type="text" name="username" />
 				</li>
 				<li class="ui-field-contain">
+					<label for="email"><?=Language::email()?></label>
+					<input type="email" name="email" />
+				</li>
+				<li class="ui-field-contain">
 					<label for="password"><?=Language::password()?></label>
 					<input type="password" name="password" />
 				</li>
@@ -23,6 +27,6 @@
 					<input type="submit" value="<?=Language::register()?>" data-icon="user" />
 				</li>
 			</ul>
-		</form?
+		</form>
 	</div>
 </div>

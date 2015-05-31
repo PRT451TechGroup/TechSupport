@@ -33,6 +33,9 @@
 					<?php Widgets::field_requirements(array("requirements" => $request['requirements'])); ?>
 				</li>
 				<li class="ui-field-contain">
+					<?php Widgets::field_completion2(array("completion" => $request["completed"])); ?>
+				</li>
+				<li class="ui-field-contain">
 					<?php Widgets::field_priority(array("priority" => $request["priority"])); ?>
 				</li>
 				<li class="ui-grid-a">

@@ -70,7 +70,7 @@ class UserApplet
 				Document::build();
 				break;
 			case "register-submit":
-				if ($args->containsKey("username", "password", "vpassword"))
+				if ($args->containsKey("username", "password", "vpassword", "email"))
 				{
 					$err = true;
 					$_PAGE["back"] = "/user/register";
@@ -79,12 +79,14 @@ class UserApplet
 						$_PAGE["error"] = Language::username_blank();
 					else if ($args->password != $args->vpassword)
 						$_PAGE["error"] = (Language::password_mismatch());
+					else if (!preg_match('/[A-Za-z0-9._%+-]+@[a-zA-Z0-9][a-zA-Z0-9-]{1,61}(?:\.[a-zA-Z0-9][a-zA-Z0-9-]{1,61})+/', $args->email))
+						$_PAGE["error"] = Language::email_invalid();
 					else if (strlen($args->password) == 0)
 						$_PAGE["error"] = (Language::password_blank());
 					else
 					{
 						//$uid = $datasource->user_register(array("username" => $args->username, "password" => $args->password));
-						$uid = $users->insertUser($args->username, $args->password);
+						$uid = $users->insertUser($args->username, $args->password, $args->email);
 						if ($uid === false)
 						{
 							$_PAGE["error"] = Language::user_exists();
