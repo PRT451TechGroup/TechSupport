@@ -32,6 +32,9 @@
 				<li class="ui-field-contain">
 					<?php Widgets::field_requirements(array("requirements" => $request['requirements'])); ?>
 				</li>
+				<li class="ui-field-contain">
+					<?php Widgets::field_priority(array("priority" => $request["priority"])); ?>
+				</li>
 				<li class="ui-grid-a">
 					<div class="ui-block-a">
 						<a href="<?=$APPLET_ROOT.'/'.$requestid?>/delete" class="ui-btn ui-corner-all ui-icon-delete ui-btn-icon-left" data-ajax="false"><?=Language::delete()?></a>

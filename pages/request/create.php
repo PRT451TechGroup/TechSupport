@@ -32,6 +32,9 @@
 				<li class="ui-field-contain">
 					<?php Widgets::field_requirements(array("requirements" => "")); ?>
 				</li>
+				<li class="ui-field-contain">
+					<?php Widgets::field_priority(array("priority" => "0")); ?>
+				</li>
 				<li>
 					<input type="submit" value="<?=Language::save()?>" data-icon="check" />
 				</li>

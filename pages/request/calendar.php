@@ -21,6 +21,10 @@
 		{
 			return ($x >= 0) ? intval($x) : -1;
 		}
+		function requestname($request)
+		{
+			return (strlen($request["staffname"]) > 0) ? $request["staffname"] : ("Request #" . $request["requestid"]);
+		}
 	?>
 	<div data-role="content">
 		<ul data-role="listview" class="requestreview">
@@ -43,8 +47,11 @@
 				
 				<li>
 					<a data-transition="slide" href="<?=$APPLET_ROOT.'/'.$request['requestid']?>">
-						<h2>Request #<?=htmlspecialchars($request["requestid"])?></h2>
+						<h2><?=requestname($request)?></h2>
 						<p><strong>Request Due <?=date('d M y', strtotime($request["duedate"]))?></strong></p>
+						<?php if (intval($request["priority"]) > 0): ?>
+							<span class="ui-li-count">!</span>
+						<?php endif; ?>
 					</a>
 				</li>
 			<?php endforeach; ?>

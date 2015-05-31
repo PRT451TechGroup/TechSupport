@@ -43,6 +43,7 @@ class RequestApplet
 				$request["requirements"] = $args["requirements"];
 				$request["location"] = (string)(new FSLocation($args["precinct"], $args["building"], $args["floor"], $args["room"]));
 				$request["duedate"] = (string)(new FSDateTime($args["year"], $args["month"], $args["day"], $args["hour"], $args["minute"]));
+				$request["priority"] = $args["priority"];
 
 				$requests->insertRequest(Session::userid(), $request);
 				
@@ -58,7 +59,7 @@ class RequestApplet
 		// review-cat
 		elseif ($path === "calendar")
 		{
-			$_PAGE["requests"] = $requests->selectRequests();
+			$_PAGE["requests"] = $requests->selectRequests(Session::userid());
 			$_PAGE["back"] = "$appletRoot";
 			Document::body(function() use($_PAGE) { Document::page("request/calendar", $_PAGE); });
 			Document::build();
@@ -75,6 +76,7 @@ class RequestApplet
 				$request["requirements"] = $args["requirements"];
 				$request["location"] = (string)(new FSLocation($args["precinct"], $args["building"], $args["floor"], $args["room"]));
 				$request["duedate"] = (string)(new FSDateTime($args["year"], $args["month"], $args["day"], $args["hour"], $args["minute"]));
+				$request["priority"] = $args["priority"];
 
 				$requests->updateRequest($requestid, $request);
 

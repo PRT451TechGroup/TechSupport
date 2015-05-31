@@ -26,7 +26,7 @@
 					<?php Widgets::fieldset_location($fsl->to_array()); ?>
 				</li>
 				<li class="ui-field-contain">
-					<?php Widgets::fieldset_date(array("prefix" => "", "label" => Language::date_due()) +
+					<?php Widgets::fieldset_date(array("prefix" => "Due date", "label" => Language::date_due()) +
 						$fsdt->to_array()); ?>
 				</li>
 				<li class="ui-field-contain">

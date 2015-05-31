@@ -97,7 +97,7 @@ class RepairApplet
 			$repairid = $matches["repairid"];
 			$repair = $repairs->selectRepairById($repairid);
 			$repairs->deleteRepairById($repairid);
-			Document::redirect($_PAGE["APPLET_ROOT"]."/review/" . $repair["completion"]);
+			Document::redirect($_PAGE["APPLET_ROOT"]."/review" . $repair["completion"]);
 		}
 		// repair-equipment-delete
 		elseif (preg_match('#^(?P<repairid>\d+)/equipment/(?P<equipmentid>\d+)/delete$#', $path, $matches))
