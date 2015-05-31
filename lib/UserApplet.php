@@ -28,7 +28,8 @@ class UserApplet
 			(
 				"." => "forgot",
 				"*" => "default",
-				"submit" => "forgot-submit"
+				"submit" => "forgot-submit",
+				"reset" => "forgot-reset"
 			),
 			"logout" => "logout"
 		));
@@ -107,7 +108,8 @@ class UserApplet
 					}
 					else
 					{
-						mail($args->email, "Password reset", "Reset code: ".$user["resetcode"], Configuration::mailheader());
+						$message = "Reset URL: ".Configuration::mailurl()."?username=".urlencode($user["username"])."&resetcode=".urlencode($user["resetcode"]);
+						mail($args->email, "Password reset", $message, Configuration::mailheader());
 						//$_PAGE["error"] = json_encode($user);
 						//Document::body(function() use($_PAGE) { Document::page("forgot-error", $_PAGE); });
 						//Document::build();
@@ -118,6 +120,29 @@ class UserApplet
 				{
 					Document::redirect(APPDIR."/user/forgot");
 				}
+				break;
+			case "forgot-reset":
+				if (isset($_GET["resetcode"]) && isset($_GET["username"]))
+				{
+					$resetcode = $_GET["resetcode"];
+					$username = $_GET["username"];
+					$userid = $users->selectIdByUsername($username);
+
+					if ($userid !== false)
+					{
+						if ($users->resetCode($userid, $resetcode))
+						{
+							$password = base64_encode(openssl_random_pseudo_bytes(16));
+							if ($users->updatePassword($userid, $password))
+							{
+								$user = $users->selectUserById($userid);
+								mail($user["email"], "New password", "Password: $password", Configuration::mailheader());
+							}
+							
+						}
+					}
+				}
+				Document::redirect(APPDIR."/");
 				break;
 			case "register":
 				$_PAGE["back"] = "/user";

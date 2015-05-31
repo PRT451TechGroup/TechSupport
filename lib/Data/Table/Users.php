@@ -51,6 +51,16 @@ class Users
 		}
 		return false;
 	}
+	public function selectIdByUsername($username)
+	{
+		$stmt = $this->conn->prepare("SELECT userid FROM users WHERE username=?");
+		if ($stmt->execute(array($username)))
+		{
+			while(list($userid) = $stmt->fetch(\PDO::FETCH_NUM))
+				return $userid;
+		}
+		return false;
+	}
 	public function listUsernames()
 	{
 		$stmt = $this->conn->prepare("SELECT userid, username FROM users");
@@ -64,10 +74,38 @@ class Users
 			return $lst;
 		}
 	}
+	public function updatePassword($userid, $password)
+	{
+		$stmt = $this->conn->prepare("UPDATE users SET resetcode=NULL,resetexpire=NULL,hash=?,salt=? WHERE userid=?");
+		$auth = \Authenticator::from_password($password);
+		if ($stmt->execute(array($auth->hash(), $auth->salt(), $userid)))
+		{
+			return $stmt->rowCount() > 0;
+		}
+		return false;
+	}
+	public function selectUserById($userid)
+	{
+		$stmt = $this->conn->prepare("SELECT userid, username, email FROM users WHERE userid=?");
+		if ($stmt->execute(array($userid)))
+		{
+			while($user = $stmt->fetch(\PDO::FETCH_ASSOC))
+				return $user;
+		}
+		return false;
+	}
+	public function resetCode($userid, $resetcode)
+	{
+		$stmt = $this->conn->prepare("SELECT userid FROM users WHERE userid=? AND resetcode=? AND resetexpire > NOW()");
+		if ($stmt->execute(array($userid, $resetcode)))
+			return $stmt->fetch() !== false;
+			
+		return false;
+	}
 	public function resetPassword($username, $email)
 	{
 		$code = base64_encode(openssl_random_pseudo_bytes(16));
-		$stmt = $this->conn->prepare("UPDATE users SET resetcode=?,resetexpire=DATE_ADD(NOW(), INTERVAL 24 HOUR) WHERE (username=? AND email=? AND resetexpire < DATE_ADD(NOW(), INTERVAL 23 HOUR)) OR (resetexpire IS NULL AND resetcode IS NULL)");
+		$stmt = $this->conn->prepare("UPDATE users SET resetcode=?,resetexpire=DATE_ADD(NOW(), INTERVAL 24 HOUR) WHERE (username=? AND email=?) AND ((resetexpire < DATE_ADD(NOW(), INTERVAL 23 HOUR)) OR (resetexpire IS NULL AND resetcode IS NULL))");
 		if ($stmt->execute(array($code, $username, $email)))
 		{
 			$stmt = $this->conn->prepare("SELECT userid, username, email, resetcode FROM users WHERE username=? AND email=? AND resetcode=?");
