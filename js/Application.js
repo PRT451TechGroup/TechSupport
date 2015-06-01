@@ -50,16 +50,22 @@ var Application = new ($Class.define(function()
 			
 			$("[data-role=listview]").listview("refresh");
 		});
-
-		/*$(document).on("pagecontainerhide", function(event, ui)
+		$(document).delegate(".equipmentcount", "click", function()
 		{
-			var redirect = ui.toPage.data("redirect");
-			if (redirect)
+			var $this = $(this);
+			var form;
+			var deep = 20;
+			form = $this.parent();
+			while(!form.prop("tagName").match(/form/i))
 			{
-				event.preventDefault();
-				$(":mobile-pagecontainer").pagecontainer("change", redirect, {transition: "slide"});
+				if (deep-- < 0)
+					return;
+
+				form = form.parent();
 			}
-		});*/
+
+			$.post(form.attr("action"), form.serialize());
+		});
 		$(document).delegate("[data-rel=back]", "click", function(e)
 		{
 			var nb = $(":mobile-pagecontainer").pagecontainer("getActivePage").data("back");
