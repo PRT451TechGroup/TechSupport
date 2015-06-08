@@ -1,12 +1,12 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
-	<div data-role="header" data-position="fixed">
+	<div data-role="header">
 		<h1><?=Language::newequip()?></h1>
 		 <?=Widgets::home()?> 
 		<?=Widgets::back($back)?>
 	</div>
 	<div data-role="content">
-		<form action="<?="$APPLET_ROOT/$repairid/equipment"?>" method="POST" data-ajax="false" data-form="repair.equipment.insert">
-			<input type="hidden" name="__method" value="insert" />
+		<form action="<?=APPDIR.$back?>" method="POST" data-validate="equipment-create" data-ajax="false">
+			<input type="hidden" name="__action" value="equipment-create" />
 			<ul data-role="listview">
 				<li class="ui-field-contain">
 					<label for="equipmentname"><?=Language::equipname()?></label>

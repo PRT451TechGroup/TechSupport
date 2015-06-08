@@ -114,8 +114,11 @@ class RepairApplet
 				$repair["duedate"] = (string)(new FSDateTime($args["year"], $args["month"], $args["day"], $args["hour"], $args["minute"]));
 				$repair["completion"] = $args["completion"];
 				$repair["priority"] = $args["priority"];
+				$ur = null;
+				if (isset($_GET["equipmentcount"]))
+					$ur = array("completion");
 
-				$repairs->updateRepair($repairid, $repair);
+				$repairs->updateRepair($repairid, $repair, $ur);
 
 				//Document::redirect($_PAGE["APPLET_ROOT"]."/review/".$args["completion"]);
 				Document::redirect($_PAGE["APPLET_ROOT"]."/view/$repairid");

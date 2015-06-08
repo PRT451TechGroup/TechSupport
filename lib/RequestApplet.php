@@ -52,7 +52,7 @@ class RequestApplet
 			}
 			else
 			{
-				$_PAGE["back"] = "/request/calendar";
+				$_PAGE["back"] = "/request";
 				Document::body(function() use($_PAGE) { Document::page("request/create", $_PAGE); });
 				Document::build();
 			}
@@ -127,7 +127,7 @@ class RequestApplet
 		{
 			$requestid = $matches["requestid"];
 			$requests->deleteRequestById($requestid);
-			Document::redirect($_PAGE["APPLET_ROOT"]."/calendar");
+			Document::redirect($_PAGE["APPLET_ROOT"]."/index");
 		}
 		else
 		{

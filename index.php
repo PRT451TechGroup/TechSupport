@@ -17,6 +17,10 @@ call_user_func(function()
 		require("config.inc.php");
 		$path = isset($_GET["forcepath"]) ? new Path($_GET["forcepath"]) : new Path(substr($_SERVER["REQUEST_URI"], strlen(APPDIR)));
 		$app = new Application();
+		foreach($_POST as $key => $value)
+		{
+			$_POST[$key] = stripslashes($value);
+		}
 		$app->arguments($_POST)->path($path)->datasource(Configuration::datasource());
 		$app->doctree(array
 		(

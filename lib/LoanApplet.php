@@ -120,7 +120,10 @@ class LoanApplet
 				$loan["returndate"] = (string)(new FSDateTime($args["return_year"], $args["return_month"], $args["return_day"]));
 				$loan["priority"] = $args["priority"];
 				$loan["completion"] = isset($args["completion"]) ? $args["completion"] : 0;
-				$loans->updateLoan($loanid, $loan);
+				$ec = null;
+				if (isset($_GET["equipmentcount"]))
+					$ec = array("completion");
+				$loans->updateLoan($loanid, $loan, $ec);
 				$cat = $loans->getCategoryById($loanid);
 				Document::redirect(($_SESSION["loanmode"] !== "calendar") ? ($_PAGE["APPLET_ROOT"]."/review/$cat") : ($_PAGE["APPLET_ROOT"]."/calendar"));
 			}

@@ -1,7 +1,7 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
-	<div data-role="header">
+	<div data-role="header" data-position="fixed">
 		<h1><?=Language::loan_edit()?></h1>
-		<?=Widgets::logout()?>
+		 <?=Widgets::home()?> 
 		<?=Widgets::back($back)?>
 	</div>
 	<?php
@@ -9,7 +9,7 @@
 	$returndate = new FSDateTime($loan["returndate"]);
 	?>
 	<div data-role="content">
-		<form action="<?=$APPLET_ROOT.'/'.$loanid?>" method="POST" data-ajax="false">
+		<form action="<?=$APPLET_ROOT.'/'.$loanid?>" method="POST" data-ajax="false" data-autosave="true">
 			<input type="hidden" name="__method" value="update" />
 			<input type="hidden" name="userid" value="<?=$loan['userid']?>" />
 			<ul data-role="listview" data-inset="false">

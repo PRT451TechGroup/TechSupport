@@ -1,5 +1,5 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
-	<div data-role="header">
+	<div data-role="header" data-position="fixed">
 		<h1><?=Language::request_view()?></h1>
 		<a href="<?=$APPLET_ROOT.'/'.$requestid?>" class="ui-btn-right ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all">Edit</a>
 		<?=Widgets::back($back)?>

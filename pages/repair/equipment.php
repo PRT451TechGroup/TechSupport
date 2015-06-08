@@ -1,7 +1,7 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>" data-force-refresh="true">
-	<div data-role="header">
+	<div data-role="header" data-position="fixed">
 		<h1><?=Language::equipment()?></h1>
-		<?=Widgets::logout()?>
+		 <?=Widgets::home()?> 
 		<?=Widgets::back($back)?>
 	</div>
 	<?php

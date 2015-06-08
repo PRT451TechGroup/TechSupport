@@ -1,7 +1,7 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
-	<div data-role="header">
+	<div data-role="header" data-position="fixed">
 		<h1><?=Language::request_edit()?></h1>
-		<?=Widgets::logout()?>
+		 <?=Widgets::home()?> 
 		<?=Widgets::back($back)?>
 	</div>
 	<?php
@@ -9,7 +9,7 @@
 	$fsdt = new FSDateTime($request['duedate']);
 	?>
 	<div data-role="content">
-		<form action="<?=$APPLET_ROOT.'/'.$requestid?>" method="POST" data-ajax="false">
+		<form action="<?=$APPLET_ROOT.'/'.$requestid?>" method="POST" data-ajax="false" data-autosave="true">
 			<input type="hidden" name="__method" value="update" />
 			<ul data-role="listview" data-inset="false">
 				<li class="ui-field-contain">

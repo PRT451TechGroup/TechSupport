@@ -5,6 +5,23 @@ var Application = new ($Class.define(function()
 {
 	this.init = function()
 	{
+		var inputTimeout = false;
+		var inputTimeout2 = false;
+		//var $self = this;
+		var formOf = function(elem)
+		{
+			var form;
+			var deep = 20;
+			form = $(elem).parent();
+			while(!form.prop("tagName").match(/form/i))
+			{
+				if (deep-- < 0)
+					return false;
+	
+				form = form.parent();
+			}
+			return form;
+		};
 		$(document).delegate("div[data-role=page][data-redirect]", "pageshow", function()
 		{
 			$(":mobile-pagecontainer").pagecontainer("change", $(this).data("redirect"));
@@ -50,21 +67,43 @@ var Application = new ($Class.define(function()
 			
 			$("[data-role=listview]").listview("refresh");
 		});
+		var timeoutFunction = function()
+		{
+			var form = $("form");
+			if (form.attr("data-autosave") === "true")
+				$.post(form.attr("action") + "?equipmentcount=1", form.serialize());
+		};
+		var timeoutFunction2 = function()
+		{
+			var form = $("form");
+			if (form.attr("data-autosave") === "true")
+				$.post(form.attr("action"), form.serialize());
+		};
+		
+		$(document).delegate("input", "input", function()
+		{
+			if (inputTimeout !== false)
+				clearTimeout(inputTimeout);
+			inputTimeout = setTimeout(timeoutFunction, 5000);
+		});
+		$(document).delegate("select[name=priority]", "change", function()
+		{
+			if (inputTimeout !== false)
+				clearTimeout(inputTimeout);
+			inputTimeout = setTimeout(timeoutFunction, 5000);
+		});
+		$(document).delegate("select[name=completion][data-theme]", "change", function()
+		{
+			if (inputTimeout2 !== false)
+				clearTimeout(inputTimeout2);
+			inputTimeout2 = setTimeout(timeoutFunction2, 5000);
+		});
+		
 		$(document).delegate(".equipmentcount", "click", function()
 		{
-			var $this = $(this);
-			var form;
-			var deep = 20;
-			form = $this.parent();
-			while(!form.prop("tagName").match(/form/i))
-			{
-				if (deep-- < 0)
-					return;
+			var form = formOf(this);
 
-				form = form.parent();
-			}
-
-			$.post(form.attr("action"), form.serialize());
+			$.post(form.attr("action") + "?equipmentcount=1", form.serialize());
 		});
 		$(document).delegate("[data-rel=back]", "click", function(e)
 		{

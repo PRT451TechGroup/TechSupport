@@ -4,6 +4,7 @@
 		<?=Widgets::logout()?>
 	</div>
 	<div data-role="content">
+		<img src="/themes/images/appLogo.jpg" alt="Mountain View" >
 		<ul data-role="listview" data-inset="true">
 			<li data-icon="gear"><a href="<?=APPDIR?>/repair" data-transition="slide"><?=Language::repair()?></a></li>
 			<li data-icon="mail"><a href="<?=APPDIR?>/request" data-transition="slide"><?=Language::request()?></a></li>

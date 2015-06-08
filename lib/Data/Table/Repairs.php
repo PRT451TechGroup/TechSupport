@@ -94,9 +94,17 @@ class Repairs
 			return $equipmentid;
 		}
 	}
-	public function updateRepair($id, $repair)
+	public function updateRepair($id, $repair, $ignoreprops = null)
 	{
 		$props = array("name", "complainer", "location", "duedate", "completion", "priority");
+		if (!is_null($ignoreprops))
+		{
+			$props = array_filter($props, function($val) use($ignoreprops)
+			{
+				return array_search($val, $ignoreprops) === FALSE;
+			});
+		}
+		
 		$vals = array();
 		foreach($props as $fieldName)
 		{

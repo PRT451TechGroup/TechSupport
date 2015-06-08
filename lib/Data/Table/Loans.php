@@ -178,6 +178,7 @@ class Loans
 			return $equipmentid;
 		}
 	}
+	/*
 	public function updateLoan($id, $loan)
 	{
 		$stmt = $this->conn->prepare(
@@ -185,6 +186,30 @@ class Loans
 			"SET creditor=?,debtor=?,loandate=?,returndate=?,priority=?,completion=? ".
 			"WHERE loanid=?");
 		return $stmt->execute(array($loan["creditor"], $loan["debtor"], $loan["loandate"], $loan["returndate"], $loan["priority"], $loan["completion"], $id));
+	}*/
+	public function updateLoan($id, $loan, $ignoreprops = null)
+	{
+		$props = array("creditor", "debtor", "loandate", "returndate", "priority", "completion");
+		if (!is_null($ignoreprops))
+		{
+			$props = array_filter($props, function($val) use($ignoreprops)
+			{
+				return array_search($val, $ignoreprops) === FALSE;
+			});
+		}
+		
+		$vals = array();
+		foreach($props as $fieldName)
+		{
+			$vals[":$fieldName"] = $loan[$fieldName];
+		}
+		$vals[":loanid"] = $id;
+
+		$setlist = implode(",", array_map(function($k) { return "$k=:$k"; }, $props));
+
+		$stmt = $this->conn->prepare("UPDATE loans SET $setlist WHERE loanid=:loanid");
+
+		return $stmt->execute($vals);
 	}
 }
 ?>

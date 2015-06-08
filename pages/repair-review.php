@@ -1,5 +1,5 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
-	<div data-role="header" data-position="fixed">
+	<div data-role="header">
 		<h1><?=Language::repair_review()?></h1>
 		 <?=Widgets::home()?> 
 		<?=Widgets::back($back)?>

@@ -1,5 +1,5 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>" data-force-refresh="true">
-	<div data-role="header" data-position="fixed">
+	<div data-role="header">
 		<h1><?=Language::equipment()?></h1>
 		 <?=Widgets::home()?> 
 		<?=Widgets::back($back)?>
