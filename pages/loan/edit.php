@@ -1,6 +1,6 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
 	<div data-role="header" data-position="fixed">
-		<h1><?=Language::loan_edit()?></h1>
+		<h1><?=(intval($loan['completion']) >= 0) ?  Language::loan_edit() : Language::loan_create()?></h1>
 		 <?=Widgets::home()?> 
 		<?=Widgets::back($back)?>
 	</div>

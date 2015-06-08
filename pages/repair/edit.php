@@ -1,6 +1,6 @@
 <div data-role="page" data-back="<?=APPDIR.$back?>">
 	<div data-role="header" data-position="fixed">
-		<h1><?=Language::repair_edit()?></h1>
+		<h1><?=(intval($repair['completion']) >= 0) ? Language::repair_edit() : Language::repair_create()?></h1>
 		 <?=Widgets::home()?> 
 		<?=Widgets::back($back)?>
 	</div>

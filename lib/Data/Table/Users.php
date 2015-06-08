@@ -21,6 +21,20 @@ class Users
 		}
 		return false;
 	}
+	public function verifyPassword($userid, $password)
+	{
+		$stmt = $this->conn->prepare("SELECT userid, hash, salt FROM users WHERE userid = ?");
+		if ($stmt->execute(array($userid)))
+		{
+			while(list($userid, $hash, $salt) = $stmt->fetch(\PDO::FETCH_NUM))
+			{
+				$auth = \Authenticator::from_hash($hash, $salt);
+				if ($auth->verify($password))
+					return true;
+			}
+		}
+		return false;
+	}
 	public function insertUser($username, $password, $email)
 	{
 		$stmt = $this->conn->prepare("INSERT INTO users (username, email, hash, salt) VALUES (?, ?, ?, ?)");
@@ -74,8 +88,14 @@ class Users
 			return $lst;
 		}
 	}
-	public function updatePassword($userid, $password)
+	public function updatePassword($userid, $password, $oldpassword = null)
 	{
+		if (!is_null($oldpassword))
+		{
+			if (!$this->verifyPassword($userid, $oldpassword))
+				return false;
+		}
+		
 		$stmt = $this->conn->prepare("UPDATE users SET resetcode=NULL,resetexpire=NULL,hash=?,salt=? WHERE userid=?");
 		$auth = \Authenticator::from_password($password);
 		if ($stmt->execute(array($auth->hash(), $auth->salt(), $userid)))
@@ -83,14 +103,24 @@ class Users
 			return $stmt->rowCount() > 0;
 		}
 		return false;
+		
 	}
 	public function selectUserById($userid)
 	{
-		$stmt = $this->conn->prepare("SELECT userid, username, email FROM users WHERE userid=?");
+		$stmt = $this->conn->prepare("SELECT userid, username, email, privilege FROM users WHERE userid=?");
 		if ($stmt->execute(array($userid)))
 		{
 			while($user = $stmt->fetch(\PDO::FETCH_ASSOC))
 				return $user;
+		}
+		return false;
+	}
+	public function selectUsersByPrivilege($privilege)
+	{
+		$stmt = $this->conn->prepare("SELECT userid, username, email FROM users WHERE privilege = ?");
+		if ($stmt->execute(array($privilege)))
+		{
+			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		}
 		return false;
 	}
@@ -100,6 +130,24 @@ class Users
 		if ($stmt->execute(array($userid, $resetcode)))
 			return $stmt->fetch() !== false;
 			
+		return false;
+	}
+	public function deleteUserById($userid)
+	{
+		$stmt = $this->conn->prepare("DELETE FROM users WHERE userid = ?");
+		if ($stmt->execute(array($userid)))
+		{
+			return true;
+		}
+		return false;
+	}
+	public function setPrivilegeById($userid, $privilege)
+	{
+		$stmt = $this->conn->prepare("UPDATE users SET privilege=? WHERE userid=?");
+		if ($stmt->execute(array($privilege, $userid)))
+		{
+			return true;
+		}
 		return false;
 	}
 	public function resetPassword($username, $email)

@@ -93,7 +93,16 @@ Language::addString(array
 	"email" => "Email",
 	"email_invalid" => "Invalid email",
 	"forgot_password" => "Forgot password",
-	"reset_password" => "Reset password"
+	"reset_password" => "Reset password",
+	"change_password" => "Change password",
+	"approve_users" => "Approve users",
+	"review_user" => "Review user",
+	"reject" => "Reject",
+	"approve" => "Approve",
+	"old_password" => "Old password",
+	"new_password" => "New password",
+	"new_password_confirm" => "Confirm new password",
+	"old_password_incorrect" => "Old password incorrect"
 ));
 Language::addString(array(
 	"validate_equipmentname0" => "Equipment name cannot be empty",

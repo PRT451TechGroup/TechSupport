@@ -14,6 +14,14 @@ class Widgets
 	{
 		return '<a href="'.APPDIR.'/" class="ui-btn-right ui-btn ui-icon-home ui-btn-icon-notext ui-shadow ui-corner-all">Home</a>';
 	}
+	
+	// user home button
+	public static function userhome()
+	{
+		return Session::verify() ?
+			'<a href="'.APPDIR.'/user" class="ui-btn-left ui-btn ui-icon-user ui-btn-icon-notext ui-shadow ui-corner-all">User</a>' :
+			'';
+	}
 
 	// header back button
 	public static function back($back)
