@@ -9,6 +9,12 @@ class Widgets
 			'';
 	}
 
+	// home button
+	public static function home()
+	{
+		return '<a href="'.APPDIR'" class="ui-btn-right ui-btn ui-icon-home ui-btn-icon-notext ui-shadow ui-corner-all">Home</a>';
+	}
+
 	// header back button
 	public static function back($back)
 	{
